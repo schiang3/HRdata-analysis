@@ -1,0 +1,558 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head></head><body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+
+  <div class="border-box-sizing">
+    <div class="container">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">KFold</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">chdir</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="k">import</span> <span class="n">itemgetter</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="k">import</span> <span class="n">SVC</span>
+<span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="k">import</span> <span class="n">DecisionTreeClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="k">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="k">import</span> <span class="n">GradientBoostingClassifier</span><span class="p">,</span><span class="n">AdaBoostClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.neural_network</span> <span class="k">import</span> <span class="n">MLPClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="k">import</span> <span class="n">RFE</span><span class="p">,</span> <span class="n">VarianceThreshold</span><span class="p">,</span> <span class="n">SelectFromModel</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="k">import</span> <span class="n">SelectKBest</span><span class="p">,</span> <span class="n">mutual_info_regression</span><span class="p">,</span> <span class="n">mutual_info_classif</span><span class="p">,</span> <span class="n">chi2</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">metrics</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">cross_validate</span><span class="p">,</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">KBinsDiscretizer</span><span class="p">,</span> <span class="n">scale</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;C:/Users/Shuya C/Desktop/depaul/dsc540&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">data</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;attritioncleaneddata.csv&#39;</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;Attrition&#39;</span><span class="p">]</span>
+<span class="n">features</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Attrition&#39;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1">#splite original dataset</span>
+<span class="n">data_train</span><span class="p">,</span> <span class="n">data_test</span><span class="p">,</span> <span class="n">target_train</span><span class="p">,</span> <span class="n">target_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">imblearn</span> <span class="k">import</span> <span class="n">under_sampling</span> 
+<span class="kn">from</span> <span class="nn">imblearn</span> <span class="k">import</span> <span class="n">over_sampling</span>
+<span class="kn">from</span> <span class="nn">imblearn.over_sampling</span> <span class="k">import</span> <span class="n">SMOTE</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Counter</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Using TensorFlow backend.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">oversampler</span><span class="o">=</span><span class="n">SMOTE</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1">#Over-sample using SMOTE</span>
+<span class="n">smote_train</span><span class="p">,</span> <span class="n">smote_target</span> <span class="o">=</span> <span class="n">oversampler</span><span class="o">.</span><span class="n">fit_sample</span><span class="p">(</span><span class="n">data_train</span><span class="p">,</span><span class="n">target_train</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">target_train</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">smote_target</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;target_train:&#39;</span><span class="p">,</span><span class="n">Counter</span><span class="p">(</span><span class="n">target_train</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;smote_target:&#39;</span><span class="p">,</span><span class="n">Counter</span><span class="p">(</span><span class="n">smote_target</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>955 1624
+target_train: Counter({0: 812, 1: 143})
+smote_target: Counter({0: 812, 1: 812})
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">make_scorer</span><span class="p">,</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">precision_score</span><span class="p">,</span> <span class="n">recall_score</span><span class="p">,</span> <span class="n">f1_score</span>
+<span class="n">scorers2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;accuracy&#39;</span> <span class="p">:</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">),</span> 
+           <span class="s1">&#39;precision&#39;</span> <span class="p">:</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">precision_score</span><span class="p">),</span>
+           <span class="s1">&#39;recall&#39;</span> <span class="p">:</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">recall_score</span><span class="p">),</span> 
+           <span class="s1">&#39;f1_score&#39;</span> <span class="p">:</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">f1_score</span><span class="p">),</span>
+           <span class="s1">&#39;roc_auc&#39;</span><span class="p">:</span> <span class="s1">&#39;roc_auc&#39;</span><span class="p">}</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1">#feature selection using gradientboosting classifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="k">import</span> <span class="n">GradientBoostingClassifier</span>
+<span class="n">clf</span> <span class="o">=</span><span class="n">GradientBoostingClassifier</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;deviance&#39;</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">min_samples_split</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> 
+<span class="n">sel</span> <span class="o">=</span> <span class="n">SelectFromModel</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">prefit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">max_features</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>                                                         
+<span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Wrapper Select: &#39;</span><span class="p">)</span>     
+<span class="n">fit_mod</span><span class="o">=</span><span class="n">sel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>    
+<span class="n">sel_idx</span><span class="o">=</span><span class="n">fit_mod</span><span class="o">.</span><span class="n">get_support</span><span class="p">()</span>
+<span class="n">sel_index</span><span class="o">=</span><span class="n">sel_idx</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sel_index</span><span class="p">)</span>
+<span class="n">temp</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">temp_idx</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">temp_del</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">sel_index</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>    
+        <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">temp_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>                                                                       
+        <span class="n">temp_del</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Selected=&#39;</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Features (total/selected):&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">))</span>
+<span class="c1">#splite gradientboosting selected features </span>
+<span class="n">g_feature</span><span class="o">=</span><span class="n">features</span><span class="p">[</span><span class="n">temp</span><span class="p">]</span>
+<span class="n">gbdata_train</span><span class="p">,</span> <span class="n">gbdata_test</span><span class="p">,</span> <span class="n">gbtarget_train</span><span class="p">,</span> <span class="n">gbtarget_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">g_feature</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Wrapper Select: 
+[True, True, True, False, True, True, True, True, True, True, True, True, True, True, False, False, False, True, True, False, True, True, False, True, True, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False]
+Selected= [&#39;Age&#39;, &#39;DailyRate&#39;, &#39;DistanceFromHome&#39;, &#39;EmployeeNumber&#39;, &#39;EnvironmentSatisfaction&#39;, &#39;HourlyRate&#39;, &#39;JobInvolvement&#39;, &#39;JobLevel&#39;, &#39;JobSatisfaction&#39;, &#39;MonthlyIncome&#39;, &#39;MonthlyRate&#39;, &#39;NumCompaniesWorked&#39;, &#39;OverTime&#39;, &#39;StockOptionLevel&#39;, &#39;TotalWorkingYears&#39;, &#39;WorkLifeBalance&#39;, &#39;YearsAtCompany&#39;, &#39;YearsSinceLastPromotion&#39;, &#39;YearsWithCurrManager&#39;, &#39;BusinessTravel_Travel_Frequently&#39;, &#39;JobRole_Sales Executive&#39;]
+Features (total/selected): 51 21
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;target_test:&#39;</span><span class="p">,</span><span class="n">Counter</span><span class="p">(</span><span class="n">target_test</span><span class="p">))</span>
+<span class="c1">#SMOTEENN</span>
+<span class="kn">from</span> <span class="nn">imblearn.combine</span> <span class="k">import</span> <span class="n">SMOTEENN</span>
+<span class="n">sme</span> <span class="o">=</span> <span class="n">SMOTEENN</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">senn_train</span><span class="p">,</span><span class="n">senn_target</span> <span class="o">=</span> <span class="n">sme</span><span class="o">.</span><span class="n">fit_resample</span><span class="p">(</span><span class="n">data_train</span><span class="p">,</span><span class="n">target_train</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SMOTEENN_target:&#39;</span><span class="p">,</span><span class="n">Counter</span><span class="p">(</span><span class="n">senn_target</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>target_test: Counter({0: 421, 1: 94})
+SMOTEENN_target: Counter({1: 629, 0: 435})
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1">#undersampling</span>
+<span class="n">rus</span> <span class="o">=</span> <span class="n">under_sampling</span><span class="o">.</span><span class="n">RandomUnderSampler</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">under_train</span><span class="p">,</span> <span class="n">under_target</span> <span class="o">=</span> <span class="n">rus</span><span class="o">.</span><span class="n">fit_resample</span><span class="p">(</span><span class="n">data_train</span><span class="p">,</span><span class="n">target_train</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;undersample_target:&#39;</span><span class="p">,</span><span class="n">Counter</span><span class="p">(</span><span class="n">under_target</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>undersample_target: Counter({0: 143, 1: 143})
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># SVM use-&gt;orginial train test split</span>
+<span class="n">start_ts</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">svmclf6</span><span class="o">=</span><span class="n">SVC</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span><span class="n">gamma</span><span class="o">=</span><span class="s1">&#39;scale&#39;</span><span class="p">,</span><span class="n">probability</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span>
+<span class="n">svmclf6</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data_train</span><span class="p">,</span><span class="n">target_train</span><span class="p">)</span>
+<span class="n">scores_ACC15</span> <span class="o">=</span> <span class="n">svmclf6</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">data_test</span><span class="p">,</span> <span class="n">target_test</span><span class="p">)</span>                                                                                                                          
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SVM Acc:&#39;</span><span class="p">,</span> <span class="n">scores_ACC15</span><span class="p">)</span>
+<span class="n">scores_AUC15</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">target_test</span><span class="p">,</span> <span class="n">svmclf6</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">data_test</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">])</span>         
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SVM AUC:&#39;</span><span class="p">,</span> <span class="n">scores_AUC15</span><span class="p">)</span>   
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SVM Run time:&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start_ts</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">target_test</span><span class="p">,</span> <span class="n">svmclf6</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data_test</span><span class="p">)))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>SVM Acc: 0.829126213592233
+SVM AUC: 0.74612119068075
+SVM Run time: 1741.857330083847
+              precision    recall  f1-score   support
+
+           0       0.84      0.97      0.90       421
+           1       0.61      0.18      0.28        94
+
+    accuracy                           0.83       515
+   macro avg       0.72      0.58      0.59       515
+weighted avg       0.80      0.83      0.79       515
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># SVM use +undersample, train test split</span>
+<span class="n">start_ts</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">svmclf4</span><span class="o">=</span><span class="n">SVC</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span><span class="n">gamma</span><span class="o">=</span><span class="s1">&#39;scale&#39;</span><span class="p">,</span><span class="n">probability</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span>
+<span class="n">svmclf4</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">under_train</span><span class="p">,</span><span class="n">under_target</span><span class="p">)</span>
+<span class="n">scores_ACC10</span> <span class="o">=</span> <span class="n">svmclf4</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">data_test</span><span class="p">,</span> <span class="n">target_test</span><span class="p">)</span>                                                                                                                          
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SVM Acc:&#39;</span><span class="p">,</span> <span class="n">scores_ACC10</span><span class="p">)</span>
+<span class="n">scores_AUC10</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">target_test</span><span class="p">,</span> <span class="n">svmclf4</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">data_test</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">])</span>         
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SVM AUC:&#39;</span><span class="p">,</span> <span class="n">scores_AUC10</span><span class="p">)</span>   
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SVM Run time:&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start_ts</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">target_test</span><span class="p">,</span> <span class="n">svmclf4</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data_test</span><span class="p">)))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>SVM Acc: 0.570873786407767
+SVM AUC: 0.7533734269975235
+SVM Run time: 1368.4091167449951
+              precision    recall  f1-score   support
+
+           0       0.92      0.52      0.67       421
+           1       0.27      0.79      0.40        94
+
+    accuracy                           0.57       515
+   macro avg       0.59      0.65      0.53       515
+weighted avg       0.80      0.57      0.62       515
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># SVM use original data , CV=5</span>
+<span class="n">start_ts</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">svmclf3</span><span class="o">=</span><span class="n">SVC</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span><span class="n">gamma</span><span class="o">=</span><span class="s1">&#39;scale&#39;</span><span class="p">,</span><span class="n">probability</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span>
+<span class="n">scores</span><span class="o">=</span><span class="n">cross_validate</span><span class="p">(</span><span class="n">svmclf3</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span> <span class="n">scorers2</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">scores_Acc9</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;test_accuracy&#39;</span><span class="p">]</span>     
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SVM Acc: </span><span class="si">%0.2f</span><span class="s2"> (+/- </span><span class="si">%0.2f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">scores_Acc9</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">scores_Acc9</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>                                                                                                    
+<span class="n">scores_AUC9</span><span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;test_roc_auc&#39;</span><span class="p">]</span>                                                                   
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SVN AUC: </span><span class="si">%0.2f</span><span class="s2"> (+/- </span><span class="si">%0.2f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">scores_AUC9</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">scores_AUC9</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>  
+<span class="n">scores_precision9</span><span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;test_precision&#39;</span><span class="p">]</span>  
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SVM precision: </span><span class="si">%0.2f</span><span class="s2"> (+/- </span><span class="si">%0.2f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">scores_precision9</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">scores_precision9</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span> 
+<span class="n">scores_recall9</span><span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;test_recall&#39;</span><span class="p">]</span>  
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SVM recall: </span><span class="si">%0.2f</span><span class="s2"> (+/- </span><span class="si">%0.2f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">scores_recall9</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">scores_recall9</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span> 
+<span class="n">scores_f19</span><span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;test_f1_score&#39;</span><span class="p">]</span>  
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SVM F1 score: </span><span class="si">%0.2f</span><span class="s2"> (+/- </span><span class="si">%0.2f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">scores_f19</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">scores_f19</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span> 
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CV Runtime:&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start_ts</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>SVM Acc: 0.85 (+/- 0.03)
+SVN AUC: 0.75 (+/- 0.04)
+SVM precision: 0.63 (+/- 0.29)
+SVM recall: 0.19 (+/- 0.08)
+SVM F1 score: 0.29 (+/- 0.12)
+CV Runtime: 11217.705582141876
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Using SVC on gradientboosting selected features </span>
+<span class="n">start_ts</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">svmclf</span><span class="o">=</span><span class="n">SVC</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span><span class="n">gamma</span><span class="o">=</span><span class="s1">&#39;scale&#39;</span><span class="p">,</span><span class="n">probability</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span>
+<span class="n">svmclf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">gbdata_train</span><span class="p">,</span> <span class="n">gbtarget_train</span><span class="p">)</span>
+<span class="n">scores_ACC</span> <span class="o">=</span> <span class="n">svmclf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">gbdata_test</span><span class="p">,</span> <span class="n">gbtarget_test</span><span class="p">)</span>                                                                                                                          
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SVM Acc:&#39;</span><span class="p">,</span> <span class="n">scores_ACC</span><span class="p">)</span>
+<span class="n">scores_AUC</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">gbtarget_test</span><span class="p">,</span> <span class="n">svmclf</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">gbdata_test</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">])</span>         
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SVM AUC:&#39;</span><span class="p">,</span> <span class="n">scores_AUC</span><span class="p">)</span>   
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SVM Run time:&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start_ts</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">gbtarget_test</span><span class="p">,</span> <span class="n">svmclf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">gbdata_test</span><span class="p">)))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>SVM Acc: 0.8252427184466019
+SVM AUC: 0.7250972860969322
+SVM Run time: 2082.3896968364716
+              precision    recall  f1-score   support
+
+           0       0.83      0.99      0.90       421
+           1       0.62      0.11      0.18        94
+
+    accuracy                           0.83       515
+   macro avg       0.73      0.55      0.54       515
+weighted avg       0.79      0.83      0.77       515
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[&#160;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    </div>
+  </div>
+
+
+ 
+
+
+
+<script type="text/javascript" src="/d2l/common/math/MathML.js?v=20.20.8.23830-324 "></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() { D2LMathML.DesktopInit('https://s.brightspace.com/lib/mathjax/2.7.4/MathJax.js?config=MML_HTMLorMML','https://s.brightspace.com/lib/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML','130'); });</script></body></html>

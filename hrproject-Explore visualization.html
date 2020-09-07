@@ -1,0 +1,6773 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head></head><body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+
+  <div class="border-box-sizing">
+    <div class="container">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">KFold</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="k">import</span> <span class="n">LinearRegression</span><span class="p">,</span> <span class="n">Lasso</span><span class="p">,</span> <span class="n">Ridge</span><span class="p">,</span> <span class="n">ElasticNet</span><span class="p">,</span> <span class="n">SGDRegressor</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">chdir</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;C:/Users/Shuya C/Desktop/depaul/dsc540&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;hr.csv&#39;</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+<span class="n">df2</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="c1"># there&#39;s no missing data</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[5]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Age                         0
+Attrition                   0
+BusinessTravel              0
+DailyRate                   0
+Department                  0
+DistanceFromHome            0
+Education                   0
+EducationField              0
+EmployeeNumber              0
+EnvironmentSatisfaction     0
+Gender                      0
+HourlyRate                  0
+JobInvolvement              0
+JobLevel                    0
+JobRole                     0
+JobSatisfaction             0
+MaritalStatus               0
+MonthlyIncome               0
+MonthlyRate                 0
+NumCompaniesWorked          0
+OverTime                    0
+PercentSalaryHike           0
+PerformanceRating           0
+RelationshipSatisfaction    0
+StockOptionLevel            0
+TotalWorkingYears           0
+TrainingTimesLastYear       0
+WorkLifeBalance             0
+YearsAtCompany              0
+YearsInCurrentRole          0
+YearsSinceLastPromotion     0
+YearsWithCurrManager        0
+dtype: int64</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">shape</span> <span class="c1">#remove the header (1470 rows and 34 features one class)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[6]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(1470, 32)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+RangeIndex: 1470 entries, 0 to 1469
+Data columns (total 32 columns):
+Age                         1470 non-null int64
+Attrition                   1470 non-null int64
+BusinessTravel              1470 non-null object
+DailyRate                   1470 non-null int64
+Department                  1470 non-null object
+DistanceFromHome            1470 non-null int64
+Education                   1470 non-null int64
+EducationField              1470 non-null object
+EmployeeNumber              1470 non-null int64
+EnvironmentSatisfaction     1470 non-null int64
+Gender                      1470 non-null object
+HourlyRate                  1470 non-null int64
+JobInvolvement              1470 non-null int64
+JobLevel                    1470 non-null int64
+JobRole                     1470 non-null object
+JobSatisfaction             1470 non-null int64
+MaritalStatus               1470 non-null object
+MonthlyIncome               1470 non-null int64
+MonthlyRate                 1470 non-null int64
+NumCompaniesWorked          1470 non-null int64
+OverTime                    1470 non-null int64
+PercentSalaryHike           1470 non-null int64
+PerformanceRating           1470 non-null int64
+RelationshipSatisfaction    1470 non-null int64
+StockOptionLevel            1470 non-null int64
+TotalWorkingYears           1470 non-null int64
+TrainingTimesLastYear       1470 non-null int64
+WorkLifeBalance             1470 non-null int64
+YearsAtCompany              1470 non-null int64
+YearsInCurrentRole          1470 non-null int64
+YearsSinceLastPromotion     1470 non-null int64
+YearsWithCurrManager        1470 non-null int64
+dtypes: int64(26), object(6)
+memory usage: 367.6+ KB
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Attrition&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;bar chart of Attrition&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="c1">#target variable </span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Attrition&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0    1233
+1     237
+Name: Attrition, dtype: int64
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="c1">#know mean std min max 25% 50% 75%</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[9]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Age</th>
+      <th>Attrition</th>
+      <th>DailyRate</th>
+      <th>DistanceFromHome</th>
+      <th>Education</th>
+      <th>EmployeeNumber</th>
+      <th>EnvironmentSatisfaction</th>
+      <th>HourlyRate</th>
+      <th>JobInvolvement</th>
+      <th>JobLevel</th>
+      <th>...</th>
+      <th>PerformanceRating</th>
+      <th>RelationshipSatisfaction</th>
+      <th>StockOptionLevel</th>
+      <th>TotalWorkingYears</th>
+      <th>TrainingTimesLastYear</th>
+      <th>WorkLifeBalance</th>
+      <th>YearsAtCompany</th>
+      <th>YearsInCurrentRole</th>
+      <th>YearsSinceLastPromotion</th>
+      <th>YearsWithCurrManager</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>...</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+      <td>1470.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>36.923810</td>
+      <td>0.161224</td>
+      <td>802.485714</td>
+      <td>9.192517</td>
+      <td>2.912925</td>
+      <td>1024.865306</td>
+      <td>2.721769</td>
+      <td>65.891156</td>
+      <td>2.729932</td>
+      <td>2.063946</td>
+      <td>...</td>
+      <td>3.153741</td>
+      <td>2.712245</td>
+      <td>0.793878</td>
+      <td>11.279592</td>
+      <td>2.799320</td>
+      <td>2.761224</td>
+      <td>7.008163</td>
+      <td>4.229252</td>
+      <td>2.187755</td>
+      <td>4.123129</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>9.135373</td>
+      <td>0.367863</td>
+      <td>403.509100</td>
+      <td>8.106864</td>
+      <td>1.024165</td>
+      <td>602.024335</td>
+      <td>1.093082</td>
+      <td>20.329428</td>
+      <td>0.711561</td>
+      <td>1.106940</td>
+      <td>...</td>
+      <td>0.360824</td>
+      <td>1.081209</td>
+      <td>0.852077</td>
+      <td>7.780782</td>
+      <td>1.289271</td>
+      <td>0.706476</td>
+      <td>6.126525</td>
+      <td>3.623137</td>
+      <td>3.222430</td>
+      <td>3.568136</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>18.000000</td>
+      <td>0.000000</td>
+      <td>102.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>30.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>...</td>
+      <td>3.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>30.000000</td>
+      <td>0.000000</td>
+      <td>465.000000</td>
+      <td>2.000000</td>
+      <td>2.000000</td>
+      <td>491.250000</td>
+      <td>2.000000</td>
+      <td>48.000000</td>
+      <td>2.000000</td>
+      <td>1.000000</td>
+      <td>...</td>
+      <td>3.000000</td>
+      <td>2.000000</td>
+      <td>0.000000</td>
+      <td>6.000000</td>
+      <td>2.000000</td>
+      <td>2.000000</td>
+      <td>3.000000</td>
+      <td>2.000000</td>
+      <td>0.000000</td>
+      <td>2.000000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>36.000000</td>
+      <td>0.000000</td>
+      <td>802.000000</td>
+      <td>7.000000</td>
+      <td>3.000000</td>
+      <td>1020.500000</td>
+      <td>3.000000</td>
+      <td>66.000000</td>
+      <td>3.000000</td>
+      <td>2.000000</td>
+      <td>...</td>
+      <td>3.000000</td>
+      <td>3.000000</td>
+      <td>1.000000</td>
+      <td>10.000000</td>
+      <td>3.000000</td>
+      <td>3.000000</td>
+      <td>5.000000</td>
+      <td>3.000000</td>
+      <td>1.000000</td>
+      <td>3.000000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>43.000000</td>
+      <td>0.000000</td>
+      <td>1157.000000</td>
+      <td>14.000000</td>
+      <td>4.000000</td>
+      <td>1555.750000</td>
+      <td>4.000000</td>
+      <td>83.750000</td>
+      <td>3.000000</td>
+      <td>3.000000</td>
+      <td>...</td>
+      <td>3.000000</td>
+      <td>4.000000</td>
+      <td>1.000000</td>
+      <td>15.000000</td>
+      <td>3.000000</td>
+      <td>3.000000</td>
+      <td>9.000000</td>
+      <td>7.000000</td>
+      <td>3.000000</td>
+      <td>7.000000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>60.000000</td>
+      <td>1.000000</td>
+      <td>1499.000000</td>
+      <td>29.000000</td>
+      <td>5.000000</td>
+      <td>2068.000000</td>
+      <td>4.000000</td>
+      <td>100.000000</td>
+      <td>4.000000</td>
+      <td>5.000000</td>
+      <td>...</td>
+      <td>4.000000</td>
+      <td>4.000000</td>
+      <td>3.000000</td>
+      <td>40.000000</td>
+      <td>6.000000</td>
+      <td>4.000000</td>
+      <td>40.000000</td>
+      <td>18.000000</td>
+      <td>15.000000</td>
+      <td>17.000000</td>
+    </tr>
+  </tbody>
+</table>
+<p>8 rows &#215; 26 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;BusinessTravel&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;bar chart of BusinessTravel&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;BusinessTravel&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Travel_Rarely        1043
+Travel_Frequently     277
+Non-Travel            150
+Name: BusinessTravel, dtype: int64
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Department&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;bar chart of Department&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;EducationField&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;bar chart of EducationField&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;JobRole&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;bar chart of JobRole&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gender&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;bar chart of Gender&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">object</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">())</span><span class="c1">#OverTime</span>
+       
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;OverTime&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Attrition&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Travel_Rarely        1043
+Travel_Frequently     277
+Non-Travel            150
+Name: BusinessTravel, dtype: int64
+Research &amp; Development    961
+Sales                     446
+Human Resources            63
+Name: Department, dtype: int64
+Life Sciences       606
+Medical             464
+Marketing           159
+Technical Degree    132
+Other                82
+Human Resources      27
+Name: EducationField, dtype: int64
+Male      882
+Female    588
+Name: Gender, dtype: int64
+Sales Executive              326
+Research Scientist           292
+Laboratory Technician        259
+Manufacturing Director       145
+Healthcare Representative    131
+Manager                      102
+Sales Representative          83
+Research Director             80
+Human Resources               52
+Name: JobRole, dtype: int64
+Married     673
+Single      470
+Divorced    327
+Name: MaritalStatus, dtype: int64
+0    1054
+1     416
+Name: OverTime, dtype: int64
+0    1233
+1     237
+Name: Attrition, dtype: int64
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">cate</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">df2</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;object&#39;</span><span class="p">:</span>
+        <span class="n">cate</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+<span class="n">catefeature</span><span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">df2</span><span class="p">[</span><span class="n">cate</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cate</span><span class="p">)</span>
+<span class="n">catefeature</span><span class="c1">#creates encoded dummy variables from the categorical variables.</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&#39;BusinessTravel&#39;, &#39;Department&#39;, &#39;EducationField&#39;, &#39;Gender&#39;, &#39;JobRole&#39;, &#39;MaritalStatus&#39;]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[16]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>BusinessTravel_Non-Travel</th>
+      <th>BusinessTravel_Travel_Frequently</th>
+      <th>BusinessTravel_Travel_Rarely</th>
+      <th>Department_Human Resources</th>
+      <th>Department_Research &amp; Development</th>
+      <th>Department_Sales</th>
+      <th>EducationField_Human Resources</th>
+      <th>EducationField_Life Sciences</th>
+      <th>EducationField_Marketing</th>
+      <th>EducationField_Medical</th>
+      <th>...</th>
+      <th>JobRole_Laboratory Technician</th>
+      <th>JobRole_Manager</th>
+      <th>JobRole_Manufacturing Director</th>
+      <th>JobRole_Research Director</th>
+      <th>JobRole_Research Scientist</th>
+      <th>JobRole_Sales Executive</th>
+      <th>JobRole_Sales Representative</th>
+      <th>MaritalStatus_Divorced</th>
+      <th>MaritalStatus_Married</th>
+      <th>MaritalStatus_Single</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1440</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1441</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1442</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1443</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1444</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1445</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1446</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1447</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1448</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1449</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1450</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1451</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1452</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1453</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1454</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1455</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1456</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1457</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1458</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1459</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1460</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1461</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1462</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1463</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1464</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1465</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1466</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1467</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1468</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1469</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>1470 rows &#215; 26 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="n">df2</span><span class="p">[</span><span class="s1">&#39;Attrition&#39;</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">numfeatures</span><span class="o">=</span><span class="n">df2</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Attrition&#39;</span><span class="p">,</span><span class="s1">&#39;BusinessTravel&#39;</span><span class="p">,</span> <span class="s1">&#39;Department&#39;</span><span class="p">,</span> <span class="s1">&#39;EducationField&#39;</span><span class="p">,</span> <span class="s1">&#39;Gender&#39;</span><span class="p">,</span> <span class="s1">&#39;JobRole&#39;</span><span class="p">,</span> <span class="s1">&#39;MaritalStatus&#39;</span><span class="p">])</span>
+<span class="n">numfeatures</span> <span class="c1"># drop target variable and 6 categorical features </span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[18]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Age</th>
+      <th>DailyRate</th>
+      <th>DistanceFromHome</th>
+      <th>Education</th>
+      <th>EmployeeNumber</th>
+      <th>EnvironmentSatisfaction</th>
+      <th>HourlyRate</th>
+      <th>JobInvolvement</th>
+      <th>JobLevel</th>
+      <th>JobSatisfaction</th>
+      <th>...</th>
+      <th>PerformanceRating</th>
+      <th>RelationshipSatisfaction</th>
+      <th>StockOptionLevel</th>
+      <th>TotalWorkingYears</th>
+      <th>TrainingTimesLastYear</th>
+      <th>WorkLifeBalance</th>
+      <th>YearsAtCompany</th>
+      <th>YearsInCurrentRole</th>
+      <th>YearsSinceLastPromotion</th>
+      <th>YearsWithCurrManager</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>41</td>
+      <td>1102</td>
+      <td>1</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>94</td>
+      <td>3</td>
+      <td>2</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>1</td>
+      <td>0</td>
+      <td>8</td>
+      <td>0</td>
+      <td>1</td>
+      <td>6</td>
+      <td>4</td>
+      <td>0</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>49</td>
+      <td>279</td>
+      <td>8</td>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td>61</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>4</td>
+      <td>4</td>
+      <td>1</td>
+      <td>10</td>
+      <td>3</td>
+      <td>3</td>
+      <td>10</td>
+      <td>7</td>
+      <td>1</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>37</td>
+      <td>1373</td>
+      <td>2</td>
+      <td>2</td>
+      <td>4</td>
+      <td>4</td>
+      <td>92</td>
+      <td>2</td>
+      <td>1</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>2</td>
+      <td>0</td>
+      <td>7</td>
+      <td>3</td>
+      <td>3</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>33</td>
+      <td>1392</td>
+      <td>3</td>
+      <td>4</td>
+      <td>5</td>
+      <td>4</td>
+      <td>56</td>
+      <td>3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>0</td>
+      <td>8</td>
+      <td>3</td>
+      <td>3</td>
+      <td>8</td>
+      <td>7</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>27</td>
+      <td>591</td>
+      <td>2</td>
+      <td>1</td>
+      <td>7</td>
+      <td>1</td>
+      <td>40</td>
+      <td>3</td>
+      <td>1</td>
+      <td>2</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>1</td>
+      <td>6</td>
+      <td>3</td>
+      <td>3</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>32</td>
+      <td>1005</td>
+      <td>2</td>
+      <td>2</td>
+      <td>8</td>
+      <td>4</td>
+      <td>79</td>
+      <td>3</td>
+      <td>1</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>0</td>
+      <td>8</td>
+      <td>2</td>
+      <td>2</td>
+      <td>7</td>
+      <td>7</td>
+      <td>3</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>59</td>
+      <td>1324</td>
+      <td>3</td>
+      <td>3</td>
+      <td>10</td>
+      <td>3</td>
+      <td>81</td>
+      <td>4</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>4</td>
+      <td>1</td>
+      <td>3</td>
+      <td>12</td>
+      <td>3</td>
+      <td>2</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>30</td>
+      <td>1358</td>
+      <td>24</td>
+      <td>1</td>
+      <td>11</td>
+      <td>4</td>
+      <td>67</td>
+      <td>3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>...</td>
+      <td>4</td>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>38</td>
+      <td>216</td>
+      <td>23</td>
+      <td>3</td>
+      <td>12</td>
+      <td>4</td>
+      <td>44</td>
+      <td>2</td>
+      <td>3</td>
+      <td>3</td>
+      <td>...</td>
+      <td>4</td>
+      <td>2</td>
+      <td>0</td>
+      <td>10</td>
+      <td>2</td>
+      <td>3</td>
+      <td>9</td>
+      <td>7</td>
+      <td>1</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>36</td>
+      <td>1299</td>
+      <td>27</td>
+      <td>3</td>
+      <td>13</td>
+      <td>3</td>
+      <td>94</td>
+      <td>3</td>
+      <td>2</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>2</td>
+      <td>2</td>
+      <td>17</td>
+      <td>3</td>
+      <td>2</td>
+      <td>7</td>
+      <td>7</td>
+      <td>7</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>35</td>
+      <td>809</td>
+      <td>16</td>
+      <td>3</td>
+      <td>14</td>
+      <td>1</td>
+      <td>84</td>
+      <td>4</td>
+      <td>1</td>
+      <td>2</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>1</td>
+      <td>6</td>
+      <td>5</td>
+      <td>3</td>
+      <td>5</td>
+      <td>4</td>
+      <td>0</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>29</td>
+      <td>153</td>
+      <td>15</td>
+      <td>2</td>
+      <td>15</td>
+      <td>4</td>
+      <td>49</td>
+      <td>2</td>
+      <td>2</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>0</td>
+      <td>10</td>
+      <td>3</td>
+      <td>3</td>
+      <td>9</td>
+      <td>5</td>
+      <td>0</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>31</td>
+      <td>670</td>
+      <td>26</td>
+      <td>1</td>
+      <td>16</td>
+      <td>1</td>
+      <td>31</td>
+      <td>3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>1</td>
+      <td>5</td>
+      <td>1</td>
+      <td>2</td>
+      <td>5</td>
+      <td>2</td>
+      <td>4</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>34</td>
+      <td>1346</td>
+      <td>19</td>
+      <td>2</td>
+      <td>18</td>
+      <td>2</td>
+      <td>93</td>
+      <td>3</td>
+      <td>1</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>2</td>
+      <td>3</td>
+      <td>2</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>28</td>
+      <td>103</td>
+      <td>24</td>
+      <td>3</td>
+      <td>19</td>
+      <td>3</td>
+      <td>50</td>
+      <td>2</td>
+      <td>1</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>2</td>
+      <td>0</td>
+      <td>6</td>
+      <td>4</td>
+      <td>3</td>
+      <td>4</td>
+      <td>2</td>
+      <td>0</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>29</td>
+      <td>1389</td>
+      <td>21</td>
+      <td>4</td>
+      <td>20</td>
+      <td>2</td>
+      <td>51</td>
+      <td>4</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>1</td>
+      <td>10</td>
+      <td>1</td>
+      <td>3</td>
+      <td>10</td>
+      <td>9</td>
+      <td>8</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>32</td>
+      <td>334</td>
+      <td>5</td>
+      <td>2</td>
+      <td>21</td>
+      <td>1</td>
+      <td>80</td>
+      <td>4</td>
+      <td>1</td>
+      <td>2</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>2</td>
+      <td>7</td>
+      <td>5</td>
+      <td>2</td>
+      <td>6</td>
+      <td>2</td>
+      <td>0</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>22</td>
+      <td>1123</td>
+      <td>16</td>
+      <td>2</td>
+      <td>22</td>
+      <td>4</td>
+      <td>96</td>
+      <td>4</td>
+      <td>1</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>2</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>53</td>
+      <td>1219</td>
+      <td>2</td>
+      <td>4</td>
+      <td>23</td>
+      <td>1</td>
+      <td>78</td>
+      <td>2</td>
+      <td>4</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>0</td>
+      <td>31</td>
+      <td>3</td>
+      <td>3</td>
+      <td>25</td>
+      <td>8</td>
+      <td>3</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>38</td>
+      <td>371</td>
+      <td>2</td>
+      <td>3</td>
+      <td>24</td>
+      <td>4</td>
+      <td>45</td>
+      <td>3</td>
+      <td>1</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>0</td>
+      <td>6</td>
+      <td>3</td>
+      <td>3</td>
+      <td>3</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>24</td>
+      <td>673</td>
+      <td>11</td>
+      <td>2</td>
+      <td>26</td>
+      <td>1</td>
+      <td>96</td>
+      <td>4</td>
+      <td>2</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>1</td>
+      <td>5</td>
+      <td>5</td>
+      <td>2</td>
+      <td>4</td>
+      <td>2</td>
+      <td>1</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>36</td>
+      <td>1218</td>
+      <td>9</td>
+      <td>4</td>
+      <td>27</td>
+      <td>3</td>
+      <td>82</td>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>4</td>
+      <td>2</td>
+      <td>0</td>
+      <td>10</td>
+      <td>4</td>
+      <td>3</td>
+      <td>5</td>
+      <td>3</td>
+      <td>0</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>34</td>
+      <td>419</td>
+      <td>7</td>
+      <td>4</td>
+      <td>28</td>
+      <td>1</td>
+      <td>53</td>
+      <td>3</td>
+      <td>3</td>
+      <td>2</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>0</td>
+      <td>13</td>
+      <td>4</td>
+      <td>3</td>
+      <td>12</td>
+      <td>6</td>
+      <td>2</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>21</td>
+      <td>391</td>
+      <td>15</td>
+      <td>2</td>
+      <td>30</td>
+      <td>3</td>
+      <td>96</td>
+      <td>3</td>
+      <td>1</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>0</td>
+      <td>0</td>
+      <td>6</td>
+      <td>3</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>34</td>
+      <td>699</td>
+      <td>6</td>
+      <td>1</td>
+      <td>31</td>
+      <td>2</td>
+      <td>83</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>0</td>
+      <td>8</td>
+      <td>2</td>
+      <td>3</td>
+      <td>4</td>
+      <td>2</td>
+      <td>1</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>53</td>
+      <td>1282</td>
+      <td>5</td>
+      <td>3</td>
+      <td>32</td>
+      <td>3</td>
+      <td>58</td>
+      <td>3</td>
+      <td>5</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>1</td>
+      <td>26</td>
+      <td>3</td>
+      <td>2</td>
+      <td>14</td>
+      <td>13</td>
+      <td>4</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>32</td>
+      <td>1125</td>
+      <td>16</td>
+      <td>1</td>
+      <td>33</td>
+      <td>2</td>
+      <td>72</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>4</td>
+      <td>2</td>
+      <td>0</td>
+      <td>10</td>
+      <td>5</td>
+      <td>3</td>
+      <td>10</td>
+      <td>2</td>
+      <td>6</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>42</td>
+      <td>691</td>
+      <td>8</td>
+      <td>4</td>
+      <td>35</td>
+      <td>3</td>
+      <td>48</td>
+      <td>3</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>1</td>
+      <td>10</td>
+      <td>2</td>
+      <td>3</td>
+      <td>9</td>
+      <td>7</td>
+      <td>4</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>44</td>
+      <td>477</td>
+      <td>7</td>
+      <td>4</td>
+      <td>36</td>
+      <td>1</td>
+      <td>42</td>
+      <td>2</td>
+      <td>3</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>1</td>
+      <td>24</td>
+      <td>4</td>
+      <td>3</td>
+      <td>22</td>
+      <td>6</td>
+      <td>5</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>46</td>
+      <td>705</td>
+      <td>2</td>
+      <td>4</td>
+      <td>38</td>
+      <td>2</td>
+      <td>83</td>
+      <td>3</td>
+      <td>5</td>
+      <td>1</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>0</td>
+      <td>22</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1440</th>
+      <td>36</td>
+      <td>688</td>
+      <td>4</td>
+      <td>2</td>
+      <td>2025</td>
+      <td>4</td>
+      <td>97</td>
+      <td>3</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>3</td>
+      <td>2</td>
+      <td>3</td>
+      <td>18</td>
+      <td>3</td>
+      <td>3</td>
+      <td>4</td>
+      <td>2</td>
+      <td>0</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1441</th>
+      <td>56</td>
+      <td>667</td>
+      <td>1</td>
+      <td>4</td>
+      <td>2026</td>
+      <td>3</td>
+      <td>57</td>
+      <td>3</td>
+      <td>2</td>
+      <td>3</td>
+      <td>...</td>
+      <td>4</td>
+      <td>1</td>
+      <td>1</td>
+      <td>13</td>
+      <td>2</td>
+      <td>2</td>
+      <td>13</td>
+      <td>12</td>
+      <td>1</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>1442</th>
+      <td>29</td>
+      <td>1092</td>
+      <td>1</td>
+      <td>4</td>
+      <td>2027</td>
+      <td>1</td>
+      <td>36</td>
+      <td>3</td>
+      <td>1</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>2</td>
+      <td>3</td>
+      <td>4</td>
+      <td>3</td>
+      <td>4</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1443</th>
+      <td>42</td>
+      <td>300</td>
+      <td>2</td>
+      <td>3</td>
+      <td>2031</td>
+      <td>1</td>
+      <td>56</td>
+      <td>3</td>
+      <td>5</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>1</td>
+      <td>0</td>
+      <td>24</td>
+      <td>2</td>
+      <td>2</td>
+      <td>22</td>
+      <td>6</td>
+      <td>4</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th>1444</th>
+      <td>56</td>
+      <td>310</td>
+      <td>7</td>
+      <td>2</td>
+      <td>2032</td>
+      <td>4</td>
+      <td>72</td>
+      <td>3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>1</td>
+      <td>14</td>
+      <td>4</td>
+      <td>1</td>
+      <td>10</td>
+      <td>9</td>
+      <td>9</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>1445</th>
+      <td>41</td>
+      <td>582</td>
+      <td>28</td>
+      <td>4</td>
+      <td>2034</td>
+      <td>1</td>
+      <td>60</td>
+      <td>2</td>
+      <td>4</td>
+      <td>2</td>
+      <td>...</td>
+      <td>4</td>
+      <td>3</td>
+      <td>1</td>
+      <td>21</td>
+      <td>3</td>
+      <td>3</td>
+      <td>20</td>
+      <td>7</td>
+      <td>0</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>1446</th>
+      <td>34</td>
+      <td>704</td>
+      <td>28</td>
+      <td>3</td>
+      <td>2035</td>
+      <td>4</td>
+      <td>95</td>
+      <td>2</td>
+      <td>2</td>
+      <td>3</td>
+      <td>...</td>
+      <td>4</td>
+      <td>4</td>
+      <td>2</td>
+      <td>8</td>
+      <td>2</td>
+      <td>3</td>
+      <td>8</td>
+      <td>7</td>
+      <td>1</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>1447</th>
+      <td>36</td>
+      <td>301</td>
+      <td>15</td>
+      <td>4</td>
+      <td>2036</td>
+      <td>4</td>
+      <td>88</td>
+      <td>1</td>
+      <td>2</td>
+      <td>4</td>
+      <td>...</td>
+      <td>4</td>
+      <td>1</td>
+      <td>1</td>
+      <td>15</td>
+      <td>4</td>
+      <td>2</td>
+      <td>15</td>
+      <td>12</td>
+      <td>11</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>1448</th>
+      <td>41</td>
+      <td>930</td>
+      <td>3</td>
+      <td>3</td>
+      <td>2037</td>
+      <td>3</td>
+      <td>57</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>1</td>
+      <td>14</td>
+      <td>5</td>
+      <td>3</td>
+      <td>5</td>
+      <td>4</td>
+      <td>0</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>1449</th>
+      <td>32</td>
+      <td>529</td>
+      <td>2</td>
+      <td>3</td>
+      <td>2038</td>
+      <td>4</td>
+      <td>78</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>0</td>
+      <td>4</td>
+      <td>4</td>
+      <td>3</td>
+      <td>4</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1450</th>
+      <td>35</td>
+      <td>1146</td>
+      <td>26</td>
+      <td>4</td>
+      <td>2040</td>
+      <td>3</td>
+      <td>31</td>
+      <td>3</td>
+      <td>3</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>0</td>
+      <td>9</td>
+      <td>2</td>
+      <td>3</td>
+      <td>9</td>
+      <td>0</td>
+      <td>1</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>1451</th>
+      <td>38</td>
+      <td>345</td>
+      <td>10</td>
+      <td>2</td>
+      <td>2041</td>
+      <td>1</td>
+      <td>100</td>
+      <td>3</td>
+      <td>2</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>1</td>
+      <td>10</td>
+      <td>1</td>
+      <td>3</td>
+      <td>10</td>
+      <td>7</td>
+      <td>1</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>1452</th>
+      <td>50</td>
+      <td>878</td>
+      <td>1</td>
+      <td>4</td>
+      <td>2044</td>
+      <td>2</td>
+      <td>94</td>
+      <td>3</td>
+      <td>2</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>2</td>
+      <td>12</td>
+      <td>3</td>
+      <td>3</td>
+      <td>6</td>
+      <td>3</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1453</th>
+      <td>36</td>
+      <td>1120</td>
+      <td>11</td>
+      <td>4</td>
+      <td>2045</td>
+      <td>2</td>
+      <td>100</td>
+      <td>2</td>
+      <td>2</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>8</td>
+      <td>2</td>
+      <td>2</td>
+      <td>6</td>
+      <td>3</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1454</th>
+      <td>45</td>
+      <td>374</td>
+      <td>20</td>
+      <td>3</td>
+      <td>2046</td>
+      <td>4</td>
+      <td>50</td>
+      <td>3</td>
+      <td>2</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>0</td>
+      <td>8</td>
+      <td>3</td>
+      <td>3</td>
+      <td>5</td>
+      <td>3</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1455</th>
+      <td>40</td>
+      <td>1322</td>
+      <td>2</td>
+      <td>4</td>
+      <td>2048</td>
+      <td>3</td>
+      <td>52</td>
+      <td>2</td>
+      <td>1</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>0</td>
+      <td>8</td>
+      <td>2</td>
+      <td>3</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1456</th>
+      <td>35</td>
+      <td>1199</td>
+      <td>18</td>
+      <td>4</td>
+      <td>2049</td>
+      <td>3</td>
+      <td>80</td>
+      <td>3</td>
+      <td>2</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>2</td>
+      <td>10</td>
+      <td>2</td>
+      <td>4</td>
+      <td>10</td>
+      <td>2</td>
+      <td>0</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1457</th>
+      <td>40</td>
+      <td>1194</td>
+      <td>2</td>
+      <td>4</td>
+      <td>2051</td>
+      <td>3</td>
+      <td>98</td>
+      <td>3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>2</td>
+      <td>3</td>
+      <td>20</td>
+      <td>2</td>
+      <td>3</td>
+      <td>5</td>
+      <td>3</td>
+      <td>0</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1458</th>
+      <td>35</td>
+      <td>287</td>
+      <td>1</td>
+      <td>4</td>
+      <td>2052</td>
+      <td>3</td>
+      <td>62</td>
+      <td>1</td>
+      <td>1</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>1</td>
+      <td>4</td>
+      <td>5</td>
+      <td>3</td>
+      <td>4</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1459</th>
+      <td>29</td>
+      <td>1378</td>
+      <td>13</td>
+      <td>2</td>
+      <td>2053</td>
+      <td>4</td>
+      <td>46</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>10</td>
+      <td>2</td>
+      <td>3</td>
+      <td>4</td>
+      <td>3</td>
+      <td>0</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>1460</th>
+      <td>29</td>
+      <td>468</td>
+      <td>28</td>
+      <td>4</td>
+      <td>2054</td>
+      <td>4</td>
+      <td>73</td>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>3</td>
+      <td>2</td>
+      <td>0</td>
+      <td>5</td>
+      <td>3</td>
+      <td>1</td>
+      <td>5</td>
+      <td>4</td>
+      <td>0</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>1461</th>
+      <td>50</td>
+      <td>410</td>
+      <td>28</td>
+      <td>3</td>
+      <td>2055</td>
+      <td>4</td>
+      <td>39</td>
+      <td>2</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>3</td>
+      <td>2</td>
+      <td>1</td>
+      <td>20</td>
+      <td>3</td>
+      <td>3</td>
+      <td>3</td>
+      <td>2</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1462</th>
+      <td>39</td>
+      <td>722</td>
+      <td>24</td>
+      <td>1</td>
+      <td>2056</td>
+      <td>2</td>
+      <td>60</td>
+      <td>2</td>
+      <td>4</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>21</td>
+      <td>2</td>
+      <td>2</td>
+      <td>20</td>
+      <td>9</td>
+      <td>9</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>1463</th>
+      <td>31</td>
+      <td>325</td>
+      <td>5</td>
+      <td>3</td>
+      <td>2057</td>
+      <td>2</td>
+      <td>74</td>
+      <td>3</td>
+      <td>2</td>
+      <td>1</td>
+      <td>...</td>
+      <td>3</td>
+      <td>2</td>
+      <td>0</td>
+      <td>10</td>
+      <td>2</td>
+      <td>3</td>
+      <td>9</td>
+      <td>4</td>
+      <td>1</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>1464</th>
+      <td>26</td>
+      <td>1167</td>
+      <td>5</td>
+      <td>3</td>
+      <td>2060</td>
+      <td>4</td>
+      <td>30</td>
+      <td>2</td>
+      <td>1</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>0</td>
+      <td>5</td>
+      <td>2</td>
+      <td>3</td>
+      <td>4</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1465</th>
+      <td>36</td>
+      <td>884</td>
+      <td>23</td>
+      <td>2</td>
+      <td>2061</td>
+      <td>3</td>
+      <td>41</td>
+      <td>4</td>
+      <td>2</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3</td>
+      <td>3</td>
+      <td>1</td>
+      <td>17</td>
+      <td>3</td>
+      <td>3</td>
+      <td>5</td>
+      <td>2</td>
+      <td>0</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>1466</th>
+      <td>39</td>
+      <td>613</td>
+      <td>6</td>
+      <td>1</td>
+      <td>2062</td>
+      <td>4</td>
+      <td>42</td>
+      <td>2</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>9</td>
+      <td>5</td>
+      <td>3</td>
+      <td>7</td>
+      <td>7</td>
+      <td>1</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>1467</th>
+      <td>27</td>
+      <td>155</td>
+      <td>4</td>
+      <td>3</td>
+      <td>2064</td>
+      <td>2</td>
+      <td>87</td>
+      <td>4</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>4</td>
+      <td>2</td>
+      <td>1</td>
+      <td>6</td>
+      <td>0</td>
+      <td>3</td>
+      <td>6</td>
+      <td>2</td>
+      <td>0</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>1468</th>
+      <td>49</td>
+      <td>1023</td>
+      <td>2</td>
+      <td>3</td>
+      <td>2065</td>
+      <td>4</td>
+      <td>63</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>3</td>
+      <td>4</td>
+      <td>0</td>
+      <td>17</td>
+      <td>3</td>
+      <td>2</td>
+      <td>9</td>
+      <td>6</td>
+      <td>0</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>1469</th>
+      <td>34</td>
+      <td>628</td>
+      <td>8</td>
+      <td>3</td>
+      <td>2068</td>
+      <td>2</td>
+      <td>82</td>
+      <td>4</td>
+      <td>2</td>
+      <td>3</td>
+      <td>...</td>
+      <td>3</td>
+      <td>1</td>
+      <td>0</td>
+      <td>6</td>
+      <td>3</td>
+      <td>4</td>
+      <td>4</td>
+      <td>3</td>
+      <td>1</td>
+      <td>2</td>
+    </tr>
+  </tbody>
+</table>
+<p>1470 rows &#215; 25 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">corr</span><span class="o">=</span><span class="n">numfeatures</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+<span class="n">corr</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">background_gradient</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;coolwarm&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set_precision</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[19]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<table><thead>    <tr>        <th class="blank level0"></th>        <th class="col_heading level0 col0">Age</th>        <th class="col_heading level0 col1">DailyRate</th>        <th class="col_heading level0 col2">DistanceFromHome</th>        <th class="col_heading level0 col3">Education</th>        <th class="col_heading level0 col4">EmployeeNumber</th>        <th class="col_heading level0 col5">EnvironmentSatisfaction</th>        <th class="col_heading level0 col6">HourlyRate</th>        <th class="col_heading level0 col7">JobInvolvement</th>        <th class="col_heading level0 col8">JobLevel</th>        <th class="col_heading level0 col9">JobSatisfaction</th>        <th class="col_heading level0 col10">MonthlyIncome</th>        <th class="col_heading level0 col11">MonthlyRate</th>        <th class="col_heading level0 col12">NumCompaniesWorked</th>        <th class="col_heading level0 col13">OverTime</th>        <th class="col_heading level0 col14">PercentSalaryHike</th>        <th class="col_heading level0 col15">PerformanceRating</th>        <th class="col_heading level0 col16">RelationshipSatisfaction</th>        <th class="col_heading level0 col17">StockOptionLevel</th>        <th class="col_heading level0 col18">TotalWorkingYears</th>        <th class="col_heading level0 col19">TrainingTimesLastYear</th>        <th class="col_heading level0 col20">WorkLifeBalance</th>        <th class="col_heading level0 col21">YearsAtCompany</th>        <th class="col_heading level0 col22">YearsInCurrentRole</th>        <th class="col_heading level0 col23">YearsSinceLastPromotion</th>        <th class="col_heading level0 col24">YearsWithCurrManager</th>    </tr></thead><tbody>
+                <tr>
+                        <th class="row_heading level0 row0">Age</th>
+                        <td class="data row0 col0">1</td>
+                        <td class="data row0 col1">0.01</td>
+                        <td class="data row0 col2">-0.002</td>
+                        <td class="data row0 col3">0.2</td>
+                        <td class="data row0 col4">-0.01</td>
+                        <td class="data row0 col5">0.01</td>
+                        <td class="data row0 col6">0.02</td>
+                        <td class="data row0 col7">0.03</td>
+                        <td class="data row0 col8">0.5</td>
+                        <td class="data row0 col9">-0.005</td>
+                        <td class="data row0 col10">0.5</td>
+                        <td class="data row0 col11">0.03</td>
+                        <td class="data row0 col12">0.3</td>
+                        <td class="data row0 col13">0.03</td>
+                        <td class="data row0 col14">0.004</td>
+                        <td class="data row0 col15">0.002</td>
+                        <td class="data row0 col16">0.05</td>
+                        <td class="data row0 col17">0.04</td>
+                        <td class="data row0 col18">0.7</td>
+                        <td class="data row0 col19">-0.02</td>
+                        <td class="data row0 col20">-0.02</td>
+                        <td class="data row0 col21">0.3</td>
+                        <td class="data row0 col22">0.2</td>
+                        <td class="data row0 col23">0.2</td>
+                        <td class="data row0 col24">0.2</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row1">DailyRate</th>
+                        <td class="data row1 col0">0.01</td>
+                        <td class="data row1 col1">1</td>
+                        <td class="data row1 col2">-0.005</td>
+                        <td class="data row1 col3">-0.02</td>
+                        <td class="data row1 col4">-0.05</td>
+                        <td class="data row1 col5">0.02</td>
+                        <td class="data row1 col6">0.02</td>
+                        <td class="data row1 col7">0.05</td>
+                        <td class="data row1 col8">0.003</td>
+                        <td class="data row1 col9">0.03</td>
+                        <td class="data row1 col10">0.008</td>
+                        <td class="data row1 col11">-0.03</td>
+                        <td class="data row1 col12">0.04</td>
+                        <td class="data row1 col13">0.009</td>
+                        <td class="data row1 col14">0.02</td>
+                        <td class="data row1 col15">0.0005</td>
+                        <td class="data row1 col16">0.008</td>
+                        <td class="data row1 col17">0.04</td>
+                        <td class="data row1 col18">0.01</td>
+                        <td class="data row1 col19">0.002</td>
+                        <td class="data row1 col20">-0.04</td>
+                        <td class="data row1 col21">-0.03</td>
+                        <td class="data row1 col22">0.01</td>
+                        <td class="data row1 col23">-0.03</td>
+                        <td class="data row1 col24">-0.03</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row2">DistanceFromHome</th>
+                        <td class="data row2 col0">-0.002</td>
+                        <td class="data row2 col1">-0.005</td>
+                        <td class="data row2 col2">1</td>
+                        <td class="data row2 col3">0.02</td>
+                        <td class="data row2 col4">0.03</td>
+                        <td class="data row2 col5">-0.02</td>
+                        <td class="data row2 col6">0.03</td>
+                        <td class="data row2 col7">0.009</td>
+                        <td class="data row2 col8">0.005</td>
+                        <td class="data row2 col9">-0.004</td>
+                        <td class="data row2 col10">-0.02</td>
+                        <td class="data row2 col11">0.03</td>
+                        <td class="data row2 col12">-0.03</td>
+                        <td class="data row2 col13">0.03</td>
+                        <td class="data row2 col14">0.04</td>
+                        <td class="data row2 col15">0.03</td>
+                        <td class="data row2 col16">0.007</td>
+                        <td class="data row2 col17">0.04</td>
+                        <td class="data row2 col18">0.005</td>
+                        <td class="data row2 col19">-0.04</td>
+                        <td class="data row2 col20">-0.03</td>
+                        <td class="data row2 col21">0.01</td>
+                        <td class="data row2 col22">0.02</td>
+                        <td class="data row2 col23">0.01</td>
+                        <td class="data row2 col24">0.01</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row3">Education</th>
+                        <td class="data row3 col0">0.2</td>
+                        <td class="data row3 col1">-0.02</td>
+                        <td class="data row3 col2">0.02</td>
+                        <td class="data row3 col3">1</td>
+                        <td class="data row3 col4">0.04</td>
+                        <td class="data row3 col5">-0.03</td>
+                        <td class="data row3 col6">0.02</td>
+                        <td class="data row3 col7">0.04</td>
+                        <td class="data row3 col8">0.1</td>
+                        <td class="data row3 col9">-0.01</td>
+                        <td class="data row3 col10">0.09</td>
+                        <td class="data row3 col11">-0.03</td>
+                        <td class="data row3 col12">0.1</td>
+                        <td class="data row3 col13">-0.02</td>
+                        <td class="data row3 col14">-0.01</td>
+                        <td class="data row3 col15">-0.02</td>
+                        <td class="data row3 col16">-0.009</td>
+                        <td class="data row3 col17">0.02</td>
+                        <td class="data row3 col18">0.1</td>
+                        <td class="data row3 col19">-0.03</td>
+                        <td class="data row3 col20">0.01</td>
+                        <td class="data row3 col21">0.07</td>
+                        <td class="data row3 col22">0.06</td>
+                        <td class="data row3 col23">0.05</td>
+                        <td class="data row3 col24">0.07</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row4">EmployeeNumber</th>
+                        <td class="data row4 col0">-0.01</td>
+                        <td class="data row4 col1">-0.05</td>
+                        <td class="data row4 col2">0.03</td>
+                        <td class="data row4 col3">0.04</td>
+                        <td class="data row4 col4">1</td>
+                        <td class="data row4 col5">0.02</td>
+                        <td class="data row4 col6">0.04</td>
+                        <td class="data row4 col7">-0.007</td>
+                        <td class="data row4 col8">-0.02</td>
+                        <td class="data row4 col9">-0.05</td>
+                        <td class="data row4 col10">-0.01</td>
+                        <td class="data row4 col11">0.01</td>
+                        <td class="data row4 col12">-0.001</td>
+                        <td class="data row4 col13">-0.02</td>
+                        <td class="data row4 col14">-0.01</td>
+                        <td class="data row4 col15">-0.02</td>
+                        <td class="data row4 col16">-0.07</td>
+                        <td class="data row4 col17">0.06</td>
+                        <td class="data row4 col18">-0.01</td>
+                        <td class="data row4 col19">0.02</td>
+                        <td class="data row4 col20">0.01</td>
+                        <td class="data row4 col21">-0.01</td>
+                        <td class="data row4 col22">-0.008</td>
+                        <td class="data row4 col23">-0.009</td>
+                        <td class="data row4 col24">-0.009</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row5">EnvironmentSatisfaction</th>
+                        <td class="data row5 col0">0.01</td>
+                        <td class="data row5 col1">0.02</td>
+                        <td class="data row5 col2">-0.02</td>
+                        <td class="data row5 col3">-0.03</td>
+                        <td class="data row5 col4">0.02</td>
+                        <td class="data row5 col5">1</td>
+                        <td class="data row5 col6">-0.05</td>
+                        <td class="data row5 col7">-0.008</td>
+                        <td class="data row5 col8">0.001</td>
+                        <td class="data row5 col9">-0.007</td>
+                        <td class="data row5 col10">-0.006</td>
+                        <td class="data row5 col11">0.04</td>
+                        <td class="data row5 col12">0.01</td>
+                        <td class="data row5 col13">0.07</td>
+                        <td class="data row5 col14">-0.03</td>
+                        <td class="data row5 col15">-0.03</td>
+                        <td class="data row5 col16">0.008</td>
+                        <td class="data row5 col17">0.003</td>
+                        <td class="data row5 col18">-0.003</td>
+                        <td class="data row5 col19">-0.02</td>
+                        <td class="data row5 col20">0.03</td>
+                        <td class="data row5 col21">0.001</td>
+                        <td class="data row5 col22">0.02</td>
+                        <td class="data row5 col23">0.02</td>
+                        <td class="data row5 col24">-0.005</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row6">HourlyRate</th>
+                        <td class="data row6 col0">0.02</td>
+                        <td class="data row6 col1">0.02</td>
+                        <td class="data row6 col2">0.03</td>
+                        <td class="data row6 col3">0.02</td>
+                        <td class="data row6 col4">0.04</td>
+                        <td class="data row6 col5">-0.05</td>
+                        <td class="data row6 col6">1</td>
+                        <td class="data row6 col7">0.04</td>
+                        <td class="data row6 col8">-0.03</td>
+                        <td class="data row6 col9">-0.07</td>
+                        <td class="data row6 col10">-0.02</td>
+                        <td class="data row6 col11">-0.02</td>
+                        <td class="data row6 col12">0.02</td>
+                        <td class="data row6 col13">-0.008</td>
+                        <td class="data row6 col14">-0.009</td>
+                        <td class="data row6 col15">-0.002</td>
+                        <td class="data row6 col16">0.001</td>
+                        <td class="data row6 col17">0.05</td>
+                        <td class="data row6 col18">-0.002</td>
+                        <td class="data row6 col19">-0.009</td>
+                        <td class="data row6 col20">-0.005</td>
+                        <td class="data row6 col21">-0.02</td>
+                        <td class="data row6 col22">-0.02</td>
+                        <td class="data row6 col23">-0.03</td>
+                        <td class="data row6 col24">-0.02</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row7">JobInvolvement</th>
+                        <td class="data row7 col0">0.03</td>
+                        <td class="data row7 col1">0.05</td>
+                        <td class="data row7 col2">0.009</td>
+                        <td class="data row7 col3">0.04</td>
+                        <td class="data row7 col4">-0.007</td>
+                        <td class="data row7 col5">-0.008</td>
+                        <td class="data row7 col6">0.04</td>
+                        <td class="data row7 col7">1</td>
+                        <td class="data row7 col8">-0.01</td>
+                        <td class="data row7 col9">-0.02</td>
+                        <td class="data row7 col10">-0.02</td>
+                        <td class="data row7 col11">-0.02</td>
+                        <td class="data row7 col12">0.02</td>
+                        <td class="data row7 col13">-0.004</td>
+                        <td class="data row7 col14">-0.02</td>
+                        <td class="data row7 col15">-0.03</td>
+                        <td class="data row7 col16">0.03</td>
+                        <td class="data row7 col17">0.02</td>
+                        <td class="data row7 col18">-0.006</td>
+                        <td class="data row7 col19">-0.02</td>
+                        <td class="data row7 col20">-0.01</td>
+                        <td class="data row7 col21">-0.02</td>
+                        <td class="data row7 col22">0.009</td>
+                        <td class="data row7 col23">-0.02</td>
+                        <td class="data row7 col24">0.03</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row8">JobLevel</th>
+                        <td class="data row8 col0">0.5</td>
+                        <td class="data row8 col1">0.003</td>
+                        <td class="data row8 col2">0.005</td>
+                        <td class="data row8 col3">0.1</td>
+                        <td class="data row8 col4">-0.02</td>
+                        <td class="data row8 col5">0.001</td>
+                        <td class="data row8 col6">-0.03</td>
+                        <td class="data row8 col7">-0.01</td>
+                        <td class="data row8 col8">1</td>
+                        <td class="data row8 col9">-0.002</td>
+                        <td class="data row8 col10">1</td>
+                        <td class="data row8 col11">0.04</td>
+                        <td class="data row8 col12">0.1</td>
+                        <td class="data row8 col13">0.0005</td>
+                        <td class="data row8 col14">-0.03</td>
+                        <td class="data row8 col15">-0.02</td>
+                        <td class="data row8 col16">0.02</td>
+                        <td class="data row8 col17">0.01</td>
+                        <td class="data row8 col18">0.8</td>
+                        <td class="data row8 col19">-0.02</td>
+                        <td class="data row8 col20">0.04</td>
+                        <td class="data row8 col21">0.5</td>
+                        <td class="data row8 col22">0.4</td>
+                        <td class="data row8 col23">0.4</td>
+                        <td class="data row8 col24">0.4</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row9">JobSatisfaction</th>
+                        <td class="data row9 col0">-0.005</td>
+                        <td class="data row9 col1">0.03</td>
+                        <td class="data row9 col2">-0.004</td>
+                        <td class="data row9 col3">-0.01</td>
+                        <td class="data row9 col4">-0.05</td>
+                        <td class="data row9 col5">-0.007</td>
+                        <td class="data row9 col6">-0.07</td>
+                        <td class="data row9 col7">-0.02</td>
+                        <td class="data row9 col8">-0.002</td>
+                        <td class="data row9 col9">1</td>
+                        <td class="data row9 col10">-0.007</td>
+                        <td class="data row9 col11">0.0006</td>
+                        <td class="data row9 col12">-0.06</td>
+                        <td class="data row9 col13">0.02</td>
+                        <td class="data row9 col14">0.02</td>
+                        <td class="data row9 col15">0.002</td>
+                        <td class="data row9 col16">-0.01</td>
+                        <td class="data row9 col17">0.01</td>
+                        <td class="data row9 col18">-0.02</td>
+                        <td class="data row9 col19">-0.006</td>
+                        <td class="data row9 col20">-0.02</td>
+                        <td class="data row9 col21">-0.004</td>
+                        <td class="data row9 col22">-0.002</td>
+                        <td class="data row9 col23">-0.02</td>
+                        <td class="data row9 col24">-0.03</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row10">MonthlyIncome</th>
+                        <td class="data row10 col0">0.5</td>
+                        <td class="data row10 col1">0.008</td>
+                        <td class="data row10 col2">-0.02</td>
+                        <td class="data row10 col3">0.09</td>
+                        <td class="data row10 col4">-0.01</td>
+                        <td class="data row10 col5">-0.006</td>
+                        <td class="data row10 col6">-0.02</td>
+                        <td class="data row10 col7">-0.02</td>
+                        <td class="data row10 col8">1</td>
+                        <td class="data row10 col9">-0.007</td>
+                        <td class="data row10 col10">1</td>
+                        <td class="data row10 col11">0.03</td>
+                        <td class="data row10 col12">0.1</td>
+                        <td class="data row10 col13">0.006</td>
+                        <td class="data row10 col14">-0.03</td>
+                        <td class="data row10 col15">-0.02</td>
+                        <td class="data row10 col16">0.03</td>
+                        <td class="data row10 col17">0.005</td>
+                        <td class="data row10 col18">0.8</td>
+                        <td class="data row10 col19">-0.02</td>
+                        <td class="data row10 col20">0.03</td>
+                        <td class="data row10 col21">0.5</td>
+                        <td class="data row10 col22">0.4</td>
+                        <td class="data row10 col23">0.3</td>
+                        <td class="data row10 col24">0.3</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row11">MonthlyRate</th>
+                        <td class="data row11 col0">0.03</td>
+                        <td class="data row11 col1">-0.03</td>
+                        <td class="data row11 col2">0.03</td>
+                        <td class="data row11 col3">-0.03</td>
+                        <td class="data row11 col4">0.01</td>
+                        <td class="data row11 col5">0.04</td>
+                        <td class="data row11 col6">-0.02</td>
+                        <td class="data row11 col7">-0.02</td>
+                        <td class="data row11 col8">0.04</td>
+                        <td class="data row11 col9">0.0006</td>
+                        <td class="data row11 col10">0.03</td>
+                        <td class="data row11 col11">1</td>
+                        <td class="data row11 col12">0.02</td>
+                        <td class="data row11 col13">0.02</td>
+                        <td class="data row11 col14">-0.006</td>
+                        <td class="data row11 col15">-0.01</td>
+                        <td class="data row11 col16">-0.004</td>
+                        <td class="data row11 col17">-0.03</td>
+                        <td class="data row11 col18">0.03</td>
+                        <td class="data row11 col19">0.001</td>
+                        <td class="data row11 col20">0.008</td>
+                        <td class="data row11 col21">-0.02</td>
+                        <td class="data row11 col22">-0.01</td>
+                        <td class="data row11 col23">0.002</td>
+                        <td class="data row11 col24">-0.04</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row12">NumCompaniesWorked</th>
+                        <td class="data row12 col0">0.3</td>
+                        <td class="data row12 col1">0.04</td>
+                        <td class="data row12 col2">-0.03</td>
+                        <td class="data row12 col3">0.1</td>
+                        <td class="data row12 col4">-0.001</td>
+                        <td class="data row12 col5">0.01</td>
+                        <td class="data row12 col6">0.02</td>
+                        <td class="data row12 col7">0.02</td>
+                        <td class="data row12 col8">0.1</td>
+                        <td class="data row12 col9">-0.06</td>
+                        <td class="data row12 col10">0.1</td>
+                        <td class="data row12 col11">0.02</td>
+                        <td class="data row12 col12">1</td>
+                        <td class="data row12 col13">-0.02</td>
+                        <td class="data row12 col14">-0.01</td>
+                        <td class="data row12 col15">-0.01</td>
+                        <td class="data row12 col16">0.05</td>
+                        <td class="data row12 col17">0.03</td>
+                        <td class="data row12 col18">0.2</td>
+                        <td class="data row12 col19">-0.07</td>
+                        <td class="data row12 col20">-0.008</td>
+                        <td class="data row12 col21">-0.1</td>
+                        <td class="data row12 col22">-0.09</td>
+                        <td class="data row12 col23">-0.04</td>
+                        <td class="data row12 col24">-0.1</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row13">OverTime</th>
+                        <td class="data row13 col0">0.03</td>
+                        <td class="data row13 col1">0.009</td>
+                        <td class="data row13 col2">0.03</td>
+                        <td class="data row13 col3">-0.02</td>
+                        <td class="data row13 col4">-0.02</td>
+                        <td class="data row13 col5">0.07</td>
+                        <td class="data row13 col6">-0.008</td>
+                        <td class="data row13 col7">-0.004</td>
+                        <td class="data row13 col8">0.0005</td>
+                        <td class="data row13 col9">0.02</td>
+                        <td class="data row13 col10">0.006</td>
+                        <td class="data row13 col11">0.02</td>
+                        <td class="data row13 col12">-0.02</td>
+                        <td class="data row13 col13">1</td>
+                        <td class="data row13 col14">-0.005</td>
+                        <td class="data row13 col15">0.004</td>
+                        <td class="data row13 col16">0.05</td>
+                        <td class="data row13 col17">-0.0004</td>
+                        <td class="data row13 col18">0.01</td>
+                        <td class="data row13 col19">-0.08</td>
+                        <td class="data row13 col20">-0.03</td>
+                        <td class="data row13 col21">-0.01</td>
+                        <td class="data row13 col22">-0.03</td>
+                        <td class="data row13 col23">-0.01</td>
+                        <td class="data row13 col24">-0.04</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row14">PercentSalaryHike</th>
+                        <td class="data row14 col0">0.004</td>
+                        <td class="data row14 col1">0.02</td>
+                        <td class="data row14 col2">0.04</td>
+                        <td class="data row14 col3">-0.01</td>
+                        <td class="data row14 col4">-0.01</td>
+                        <td class="data row14 col5">-0.03</td>
+                        <td class="data row14 col6">-0.009</td>
+                        <td class="data row14 col7">-0.02</td>
+                        <td class="data row14 col8">-0.03</td>
+                        <td class="data row14 col9">0.02</td>
+                        <td class="data row14 col10">-0.03</td>
+                        <td class="data row14 col11">-0.006</td>
+                        <td class="data row14 col12">-0.01</td>
+                        <td class="data row14 col13">-0.005</td>
+                        <td class="data row14 col14">1</td>
+                        <td class="data row14 col15">0.8</td>
+                        <td class="data row14 col16">-0.04</td>
+                        <td class="data row14 col17">0.008</td>
+                        <td class="data row14 col18">-0.02</td>
+                        <td class="data row14 col19">-0.005</td>
+                        <td class="data row14 col20">-0.003</td>
+                        <td class="data row14 col21">-0.04</td>
+                        <td class="data row14 col22">-0.002</td>
+                        <td class="data row14 col23">-0.02</td>
+                        <td class="data row14 col24">-0.01</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row15">PerformanceRating</th>
+                        <td class="data row15 col0">0.002</td>
+                        <td class="data row15 col1">0.0005</td>
+                        <td class="data row15 col2">0.03</td>
+                        <td class="data row15 col3">-0.02</td>
+                        <td class="data row15 col4">-0.02</td>
+                        <td class="data row15 col5">-0.03</td>
+                        <td class="data row15 col6">-0.002</td>
+                        <td class="data row15 col7">-0.03</td>
+                        <td class="data row15 col8">-0.02</td>
+                        <td class="data row15 col9">0.002</td>
+                        <td class="data row15 col10">-0.02</td>
+                        <td class="data row15 col11">-0.01</td>
+                        <td class="data row15 col12">-0.01</td>
+                        <td class="data row15 col13">0.004</td>
+                        <td class="data row15 col14">0.8</td>
+                        <td class="data row15 col15">1</td>
+                        <td class="data row15 col16">-0.03</td>
+                        <td class="data row15 col17">0.004</td>
+                        <td class="data row15 col18">0.007</td>
+                        <td class="data row15 col19">-0.02</td>
+                        <td class="data row15 col20">0.003</td>
+                        <td class="data row15 col21">0.003</td>
+                        <td class="data row15 col22">0.03</td>
+                        <td class="data row15 col23">0.02</td>
+                        <td class="data row15 col24">0.02</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row16">RelationshipSatisfaction</th>
+                        <td class="data row16 col0">0.05</td>
+                        <td class="data row16 col1">0.008</td>
+                        <td class="data row16 col2">0.007</td>
+                        <td class="data row16 col3">-0.009</td>
+                        <td class="data row16 col4">-0.07</td>
+                        <td class="data row16 col5">0.008</td>
+                        <td class="data row16 col6">0.001</td>
+                        <td class="data row16 col7">0.03</td>
+                        <td class="data row16 col8">0.02</td>
+                        <td class="data row16 col9">-0.01</td>
+                        <td class="data row16 col10">0.03</td>
+                        <td class="data row16 col11">-0.004</td>
+                        <td class="data row16 col12">0.05</td>
+                        <td class="data row16 col13">0.05</td>
+                        <td class="data row16 col14">-0.04</td>
+                        <td class="data row16 col15">-0.03</td>
+                        <td class="data row16 col16">1</td>
+                        <td class="data row16 col17">-0.05</td>
+                        <td class="data row16 col18">0.02</td>
+                        <td class="data row16 col19">0.002</td>
+                        <td class="data row16 col20">0.02</td>
+                        <td class="data row16 col21">0.02</td>
+                        <td class="data row16 col22">-0.02</td>
+                        <td class="data row16 col23">0.03</td>
+                        <td class="data row16 col24">-0.0009</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row17">StockOptionLevel</th>
+                        <td class="data row17 col0">0.04</td>
+                        <td class="data row17 col1">0.04</td>
+                        <td class="data row17 col2">0.04</td>
+                        <td class="data row17 col3">0.02</td>
+                        <td class="data row17 col4">0.06</td>
+                        <td class="data row17 col5">0.003</td>
+                        <td class="data row17 col6">0.05</td>
+                        <td class="data row17 col7">0.02</td>
+                        <td class="data row17 col8">0.01</td>
+                        <td class="data row17 col9">0.01</td>
+                        <td class="data row17 col10">0.005</td>
+                        <td class="data row17 col11">-0.03</td>
+                        <td class="data row17 col12">0.03</td>
+                        <td class="data row17 col13">-0.0004</td>
+                        <td class="data row17 col14">0.008</td>
+                        <td class="data row17 col15">0.004</td>
+                        <td class="data row17 col16">-0.05</td>
+                        <td class="data row17 col17">1</td>
+                        <td class="data row17 col18">0.01</td>
+                        <td class="data row17 col19">0.01</td>
+                        <td class="data row17 col20">0.004</td>
+                        <td class="data row17 col21">0.02</td>
+                        <td class="data row17 col22">0.05</td>
+                        <td class="data row17 col23">0.01</td>
+                        <td class="data row17 col24">0.02</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row18">TotalWorkingYears</th>
+                        <td class="data row18 col0">0.7</td>
+                        <td class="data row18 col1">0.01</td>
+                        <td class="data row18 col2">0.005</td>
+                        <td class="data row18 col3">0.1</td>
+                        <td class="data row18 col4">-0.01</td>
+                        <td class="data row18 col5">-0.003</td>
+                        <td class="data row18 col6">-0.002</td>
+                        <td class="data row18 col7">-0.006</td>
+                        <td class="data row18 col8">0.8</td>
+                        <td class="data row18 col9">-0.02</td>
+                        <td class="data row18 col10">0.8</td>
+                        <td class="data row18 col11">0.03</td>
+                        <td class="data row18 col12">0.2</td>
+                        <td class="data row18 col13">0.01</td>
+                        <td class="data row18 col14">-0.02</td>
+                        <td class="data row18 col15">0.007</td>
+                        <td class="data row18 col16">0.02</td>
+                        <td class="data row18 col17">0.01</td>
+                        <td class="data row18 col18">1</td>
+                        <td class="data row18 col19">-0.04</td>
+                        <td class="data row18 col20">0.001</td>
+                        <td class="data row18 col21">0.6</td>
+                        <td class="data row18 col22">0.5</td>
+                        <td class="data row18 col23">0.4</td>
+                        <td class="data row18 col24">0.5</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row19">TrainingTimesLastYear</th>
+                        <td class="data row19 col0">-0.02</td>
+                        <td class="data row19 col1">0.002</td>
+                        <td class="data row19 col2">-0.04</td>
+                        <td class="data row19 col3">-0.03</td>
+                        <td class="data row19 col4">0.02</td>
+                        <td class="data row19 col5">-0.02</td>
+                        <td class="data row19 col6">-0.009</td>
+                        <td class="data row19 col7">-0.02</td>
+                        <td class="data row19 col8">-0.02</td>
+                        <td class="data row19 col9">-0.006</td>
+                        <td class="data row19 col10">-0.02</td>
+                        <td class="data row19 col11">0.001</td>
+                        <td class="data row19 col12">-0.07</td>
+                        <td class="data row19 col13">-0.08</td>
+                        <td class="data row19 col14">-0.005</td>
+                        <td class="data row19 col15">-0.02</td>
+                        <td class="data row19 col16">0.002</td>
+                        <td class="data row19 col17">0.01</td>
+                        <td class="data row19 col18">-0.04</td>
+                        <td class="data row19 col19">1</td>
+                        <td class="data row19 col20">0.03</td>
+                        <td class="data row19 col21">0.004</td>
+                        <td class="data row19 col22">-0.006</td>
+                        <td class="data row19 col23">-0.002</td>
+                        <td class="data row19 col24">-0.004</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row20">WorkLifeBalance</th>
+                        <td class="data row20 col0">-0.02</td>
+                        <td class="data row20 col1">-0.04</td>
+                        <td class="data row20 col2">-0.03</td>
+                        <td class="data row20 col3">0.01</td>
+                        <td class="data row20 col4">0.01</td>
+                        <td class="data row20 col5">0.03</td>
+                        <td class="data row20 col6">-0.005</td>
+                        <td class="data row20 col7">-0.01</td>
+                        <td class="data row20 col8">0.04</td>
+                        <td class="data row20 col9">-0.02</td>
+                        <td class="data row20 col10">0.03</td>
+                        <td class="data row20 col11">0.008</td>
+                        <td class="data row20 col12">-0.008</td>
+                        <td class="data row20 col13">-0.03</td>
+                        <td class="data row20 col14">-0.003</td>
+                        <td class="data row20 col15">0.003</td>
+                        <td class="data row20 col16">0.02</td>
+                        <td class="data row20 col17">0.004</td>
+                        <td class="data row20 col18">0.001</td>
+                        <td class="data row20 col19">0.03</td>
+                        <td class="data row20 col20">1</td>
+                        <td class="data row20 col21">0.01</td>
+                        <td class="data row20 col22">0.05</td>
+                        <td class="data row20 col23">0.009</td>
+                        <td class="data row20 col24">0.003</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row21">YearsAtCompany</th>
+                        <td class="data row21 col0">0.3</td>
+                        <td class="data row21 col1">-0.03</td>
+                        <td class="data row21 col2">0.01</td>
+                        <td class="data row21 col3">0.07</td>
+                        <td class="data row21 col4">-0.01</td>
+                        <td class="data row21 col5">0.001</td>
+                        <td class="data row21 col6">-0.02</td>
+                        <td class="data row21 col7">-0.02</td>
+                        <td class="data row21 col8">0.5</td>
+                        <td class="data row21 col9">-0.004</td>
+                        <td class="data row21 col10">0.5</td>
+                        <td class="data row21 col11">-0.02</td>
+                        <td class="data row21 col12">-0.1</td>
+                        <td class="data row21 col13">-0.01</td>
+                        <td class="data row21 col14">-0.04</td>
+                        <td class="data row21 col15">0.003</td>
+                        <td class="data row21 col16">0.02</td>
+                        <td class="data row21 col17">0.02</td>
+                        <td class="data row21 col18">0.6</td>
+                        <td class="data row21 col19">0.004</td>
+                        <td class="data row21 col20">0.01</td>
+                        <td class="data row21 col21">1</td>
+                        <td class="data row21 col22">0.8</td>
+                        <td class="data row21 col23">0.6</td>
+                        <td class="data row21 col24">0.8</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row22">YearsInCurrentRole</th>
+                        <td class="data row22 col0">0.2</td>
+                        <td class="data row22 col1">0.01</td>
+                        <td class="data row22 col2">0.02</td>
+                        <td class="data row22 col3">0.06</td>
+                        <td class="data row22 col4">-0.008</td>
+                        <td class="data row22 col5">0.02</td>
+                        <td class="data row22 col6">-0.02</td>
+                        <td class="data row22 col7">0.009</td>
+                        <td class="data row22 col8">0.4</td>
+                        <td class="data row22 col9">-0.002</td>
+                        <td class="data row22 col10">0.4</td>
+                        <td class="data row22 col11">-0.01</td>
+                        <td class="data row22 col12">-0.09</td>
+                        <td class="data row22 col13">-0.03</td>
+                        <td class="data row22 col14">-0.002</td>
+                        <td class="data row22 col15">0.03</td>
+                        <td class="data row22 col16">-0.02</td>
+                        <td class="data row22 col17">0.05</td>
+                        <td class="data row22 col18">0.5</td>
+                        <td class="data row22 col19">-0.006</td>
+                        <td class="data row22 col20">0.05</td>
+                        <td class="data row22 col21">0.8</td>
+                        <td class="data row22 col22">1</td>
+                        <td class="data row22 col23">0.5</td>
+                        <td class="data row22 col24">0.7</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row23">YearsSinceLastPromotion</th>
+                        <td class="data row23 col0">0.2</td>
+                        <td class="data row23 col1">-0.03</td>
+                        <td class="data row23 col2">0.01</td>
+                        <td class="data row23 col3">0.05</td>
+                        <td class="data row23 col4">-0.009</td>
+                        <td class="data row23 col5">0.02</td>
+                        <td class="data row23 col6">-0.03</td>
+                        <td class="data row23 col7">-0.02</td>
+                        <td class="data row23 col8">0.4</td>
+                        <td class="data row23 col9">-0.02</td>
+                        <td class="data row23 col10">0.3</td>
+                        <td class="data row23 col11">0.002</td>
+                        <td class="data row23 col12">-0.04</td>
+                        <td class="data row23 col13">-0.01</td>
+                        <td class="data row23 col14">-0.02</td>
+                        <td class="data row23 col15">0.02</td>
+                        <td class="data row23 col16">0.03</td>
+                        <td class="data row23 col17">0.01</td>
+                        <td class="data row23 col18">0.4</td>
+                        <td class="data row23 col19">-0.002</td>
+                        <td class="data row23 col20">0.009</td>
+                        <td class="data row23 col21">0.6</td>
+                        <td class="data row23 col22">0.5</td>
+                        <td class="data row23 col23">1</td>
+                        <td class="data row23 col24">0.5</td>
+            </tr>
+            <tr>
+                        <th class="row_heading level0 row24">YearsWithCurrManager</th>
+                        <td class="data row24 col0">0.2</td>
+                        <td class="data row24 col1">-0.03</td>
+                        <td class="data row24 col2">0.01</td>
+                        <td class="data row24 col3">0.07</td>
+                        <td class="data row24 col4">-0.009</td>
+                        <td class="data row24 col5">-0.005</td>
+                        <td class="data row24 col6">-0.02</td>
+                        <td class="data row24 col7">0.03</td>
+                        <td class="data row24 col8">0.4</td>
+                        <td class="data row24 col9">-0.03</td>
+                        <td class="data row24 col10">0.3</td>
+                        <td class="data row24 col11">-0.04</td>
+                        <td class="data row24 col12">-0.1</td>
+                        <td class="data row24 col13">-0.04</td>
+                        <td class="data row24 col14">-0.01</td>
+                        <td class="data row24 col15">0.02</td>
+                        <td class="data row24 col16">-0.0009</td>
+                        <td class="data row24 col17">0.02</td>
+                        <td class="data row24 col18">0.5</td>
+                        <td class="data row24 col19">-0.004</td>
+                        <td class="data row24 col20">0.003</td>
+                        <td class="data row24 col21">0.8</td>
+                        <td class="data row24 col22">0.7</td>
+                        <td class="data row24 col23">0.5</td>
+                        <td class="data row24 col24">1</td>
+            </tr>
+    </tbody></table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">corr</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[20]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x2922f44a080&gt;</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[21]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">att_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">target</span><span class="p">,</span> <span class="n">numfeatures</span><span class="p">,</span><span class="n">catefeature</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">att_df</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[21]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Attrition</th>
+      <th>Age</th>
+      <th>DailyRate</th>
+      <th>DistanceFromHome</th>
+      <th>Education</th>
+      <th>EmployeeNumber</th>
+      <th>EnvironmentSatisfaction</th>
+      <th>HourlyRate</th>
+      <th>JobInvolvement</th>
+      <th>JobLevel</th>
+      <th>...</th>
+      <th>JobRole_Laboratory Technician</th>
+      <th>JobRole_Manager</th>
+      <th>JobRole_Manufacturing Director</th>
+      <th>JobRole_Research Director</th>
+      <th>JobRole_Research Scientist</th>
+      <th>JobRole_Sales Executive</th>
+      <th>JobRole_Sales Representative</th>
+      <th>MaritalStatus_Divorced</th>
+      <th>MaritalStatus_Married</th>
+      <th>MaritalStatus_Single</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>41</td>
+      <td>1102</td>
+      <td>1</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>94</td>
+      <td>3</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>49</td>
+      <td>279</td>
+      <td>8</td>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td>61</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>37</td>
+      <td>1373</td>
+      <td>2</td>
+      <td>2</td>
+      <td>4</td>
+      <td>4</td>
+      <td>92</td>
+      <td>2</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>33</td>
+      <td>1392</td>
+      <td>3</td>
+      <td>4</td>
+      <td>5</td>
+      <td>4</td>
+      <td>56</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>27</td>
+      <td>591</td>
+      <td>2</td>
+      <td>1</td>
+      <td>7</td>
+      <td>1</td>
+      <td>40</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0</td>
+      <td>32</td>
+      <td>1005</td>
+      <td>2</td>
+      <td>2</td>
+      <td>8</td>
+      <td>4</td>
+      <td>79</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0</td>
+      <td>59</td>
+      <td>1324</td>
+      <td>3</td>
+      <td>3</td>
+      <td>10</td>
+      <td>3</td>
+      <td>81</td>
+      <td>4</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0</td>
+      <td>30</td>
+      <td>1358</td>
+      <td>24</td>
+      <td>1</td>
+      <td>11</td>
+      <td>4</td>
+      <td>67</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0</td>
+      <td>38</td>
+      <td>216</td>
+      <td>23</td>
+      <td>3</td>
+      <td>12</td>
+      <td>4</td>
+      <td>44</td>
+      <td>2</td>
+      <td>3</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0</td>
+      <td>36</td>
+      <td>1299</td>
+      <td>27</td>
+      <td>3</td>
+      <td>13</td>
+      <td>3</td>
+      <td>94</td>
+      <td>3</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>0</td>
+      <td>35</td>
+      <td>809</td>
+      <td>16</td>
+      <td>3</td>
+      <td>14</td>
+      <td>1</td>
+      <td>84</td>
+      <td>4</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>0</td>
+      <td>29</td>
+      <td>153</td>
+      <td>15</td>
+      <td>2</td>
+      <td>15</td>
+      <td>4</td>
+      <td>49</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>0</td>
+      <td>31</td>
+      <td>670</td>
+      <td>26</td>
+      <td>1</td>
+      <td>16</td>
+      <td>1</td>
+      <td>31</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>0</td>
+      <td>34</td>
+      <td>1346</td>
+      <td>19</td>
+      <td>2</td>
+      <td>18</td>
+      <td>2</td>
+      <td>93</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>1</td>
+      <td>28</td>
+      <td>103</td>
+      <td>24</td>
+      <td>3</td>
+      <td>19</td>
+      <td>3</td>
+      <td>50</td>
+      <td>2</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>0</td>
+      <td>29</td>
+      <td>1389</td>
+      <td>21</td>
+      <td>4</td>
+      <td>20</td>
+      <td>2</td>
+      <td>51</td>
+      <td>4</td>
+      <td>3</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>0</td>
+      <td>32</td>
+      <td>334</td>
+      <td>5</td>
+      <td>2</td>
+      <td>21</td>
+      <td>1</td>
+      <td>80</td>
+      <td>4</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>0</td>
+      <td>22</td>
+      <td>1123</td>
+      <td>16</td>
+      <td>2</td>
+      <td>22</td>
+      <td>4</td>
+      <td>96</td>
+      <td>4</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>0</td>
+      <td>53</td>
+      <td>1219</td>
+      <td>2</td>
+      <td>4</td>
+      <td>23</td>
+      <td>1</td>
+      <td>78</td>
+      <td>2</td>
+      <td>4</td>
+      <td>...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>0</td>
+      <td>38</td>
+      <td>371</td>
+      <td>2</td>
+      <td>3</td>
+      <td>24</td>
+      <td>4</td>
+      <td>45</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>0</td>
+      <td>24</td>
+      <td>673</td>
+      <td>11</td>
+      <td>2</td>
+      <td>26</td>
+      <td>1</td>
+      <td>96</td>
+      <td>4</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>1</td>
+      <td>36</td>
+      <td>1218</td>
+      <td>9</td>
+      <td>4</td>
+      <td>27</td>
+      <td>3</td>
+      <td>82</td>
+      <td>2</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>0</td>
+      <td>34</td>
+      <td>419</td>
+      <td>7</td>
+      <td>4</td>
+      <td>28</td>
+      <td>1</td>
+      <td>53</td>
+      <td>3</td>
+      <td>3</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>0</td>
+      <td>21</td>
+      <td>391</td>
+      <td>15</td>
+      <td>2</td>
+      <td>30</td>
+      <td>3</td>
+      <td>96</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>1</td>
+      <td>34</td>
+      <td>699</td>
+      <td>6</td>
+      <td>1</td>
+      <td>31</td>
+      <td>2</td>
+      <td>83</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>0</td>
+      <td>53</td>
+      <td>1282</td>
+      <td>5</td>
+      <td>3</td>
+      <td>32</td>
+      <td>3</td>
+      <td>58</td>
+      <td>3</td>
+      <td>5</td>
+      <td>...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>1</td>
+      <td>32</td>
+      <td>1125</td>
+      <td>16</td>
+      <td>1</td>
+      <td>33</td>
+      <td>2</td>
+      <td>72</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>0</td>
+      <td>42</td>
+      <td>691</td>
+      <td>8</td>
+      <td>4</td>
+      <td>35</td>
+      <td>3</td>
+      <td>48</td>
+      <td>3</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>0</td>
+      <td>44</td>
+      <td>477</td>
+      <td>7</td>
+      <td>4</td>
+      <td>36</td>
+      <td>1</td>
+      <td>42</td>
+      <td>2</td>
+      <td>3</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>0</td>
+      <td>46</td>
+      <td>705</td>
+      <td>2</td>
+      <td>4</td>
+      <td>38</td>
+      <td>2</td>
+      <td>83</td>
+      <td>3</td>
+      <td>5</td>
+      <td>...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1440</th>
+      <td>0</td>
+      <td>36</td>
+      <td>688</td>
+      <td>4</td>
+      <td>2</td>
+      <td>2025</td>
+      <td>4</td>
+      <td>97</td>
+      <td>3</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1441</th>
+      <td>0</td>
+      <td>56</td>
+      <td>667</td>
+      <td>1</td>
+      <td>4</td>
+      <td>2026</td>
+      <td>3</td>
+      <td>57</td>
+      <td>3</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1442</th>
+      <td>1</td>
+      <td>29</td>
+      <td>1092</td>
+      <td>1</td>
+      <td>4</td>
+      <td>2027</td>
+      <td>1</td>
+      <td>36</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1443</th>
+      <td>0</td>
+      <td>42</td>
+      <td>300</td>
+      <td>2</td>
+      <td>3</td>
+      <td>2031</td>
+      <td>1</td>
+      <td>56</td>
+      <td>3</td>
+      <td>5</td>
+      <td>...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1444</th>
+      <td>1</td>
+      <td>56</td>
+      <td>310</td>
+      <td>7</td>
+      <td>2</td>
+      <td>2032</td>
+      <td>4</td>
+      <td>72</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1445</th>
+      <td>0</td>
+      <td>41</td>
+      <td>582</td>
+      <td>28</td>
+      <td>4</td>
+      <td>2034</td>
+      <td>1</td>
+      <td>60</td>
+      <td>2</td>
+      <td>4</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1446</th>
+      <td>0</td>
+      <td>34</td>
+      <td>704</td>
+      <td>28</td>
+      <td>3</td>
+      <td>2035</td>
+      <td>4</td>
+      <td>95</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1447</th>
+      <td>0</td>
+      <td>36</td>
+      <td>301</td>
+      <td>15</td>
+      <td>4</td>
+      <td>2036</td>
+      <td>4</td>
+      <td>88</td>
+      <td>1</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1448</th>
+      <td>0</td>
+      <td>41</td>
+      <td>930</td>
+      <td>3</td>
+      <td>3</td>
+      <td>2037</td>
+      <td>3</td>
+      <td>57</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1449</th>
+      <td>0</td>
+      <td>32</td>
+      <td>529</td>
+      <td>2</td>
+      <td>3</td>
+      <td>2038</td>
+      <td>4</td>
+      <td>78</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1450</th>
+      <td>0</td>
+      <td>35</td>
+      <td>1146</td>
+      <td>26</td>
+      <td>4</td>
+      <td>2040</td>
+      <td>3</td>
+      <td>31</td>
+      <td>3</td>
+      <td>3</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1451</th>
+      <td>0</td>
+      <td>38</td>
+      <td>345</td>
+      <td>10</td>
+      <td>2</td>
+      <td>2041</td>
+      <td>1</td>
+      <td>100</td>
+      <td>3</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1452</th>
+      <td>1</td>
+      <td>50</td>
+      <td>878</td>
+      <td>1</td>
+      <td>4</td>
+      <td>2044</td>
+      <td>2</td>
+      <td>94</td>
+      <td>3</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1453</th>
+      <td>0</td>
+      <td>36</td>
+      <td>1120</td>
+      <td>11</td>
+      <td>4</td>
+      <td>2045</td>
+      <td>2</td>
+      <td>100</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1454</th>
+      <td>0</td>
+      <td>45</td>
+      <td>374</td>
+      <td>20</td>
+      <td>3</td>
+      <td>2046</td>
+      <td>4</td>
+      <td>50</td>
+      <td>3</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1455</th>
+      <td>0</td>
+      <td>40</td>
+      <td>1322</td>
+      <td>2</td>
+      <td>4</td>
+      <td>2048</td>
+      <td>3</td>
+      <td>52</td>
+      <td>2</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1456</th>
+      <td>0</td>
+      <td>35</td>
+      <td>1199</td>
+      <td>18</td>
+      <td>4</td>
+      <td>2049</td>
+      <td>3</td>
+      <td>80</td>
+      <td>3</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1457</th>
+      <td>0</td>
+      <td>40</td>
+      <td>1194</td>
+      <td>2</td>
+      <td>4</td>
+      <td>2051</td>
+      <td>3</td>
+      <td>98</td>
+      <td>3</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1458</th>
+      <td>0</td>
+      <td>35</td>
+      <td>287</td>
+      <td>1</td>
+      <td>4</td>
+      <td>2052</td>
+      <td>3</td>
+      <td>62</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1459</th>
+      <td>0</td>
+      <td>29</td>
+      <td>1378</td>
+      <td>13</td>
+      <td>2</td>
+      <td>2053</td>
+      <td>4</td>
+      <td>46</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1460</th>
+      <td>0</td>
+      <td>29</td>
+      <td>468</td>
+      <td>28</td>
+      <td>4</td>
+      <td>2054</td>
+      <td>4</td>
+      <td>73</td>
+      <td>2</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1461</th>
+      <td>1</td>
+      <td>50</td>
+      <td>410</td>
+      <td>28</td>
+      <td>3</td>
+      <td>2055</td>
+      <td>4</td>
+      <td>39</td>
+      <td>2</td>
+      <td>3</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1462</th>
+      <td>0</td>
+      <td>39</td>
+      <td>722</td>
+      <td>24</td>
+      <td>1</td>
+      <td>2056</td>
+      <td>2</td>
+      <td>60</td>
+      <td>2</td>
+      <td>4</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1463</th>
+      <td>0</td>
+      <td>31</td>
+      <td>325</td>
+      <td>5</td>
+      <td>3</td>
+      <td>2057</td>
+      <td>2</td>
+      <td>74</td>
+      <td>3</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1464</th>
+      <td>0</td>
+      <td>26</td>
+      <td>1167</td>
+      <td>5</td>
+      <td>3</td>
+      <td>2060</td>
+      <td>4</td>
+      <td>30</td>
+      <td>2</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1465</th>
+      <td>0</td>
+      <td>36</td>
+      <td>884</td>
+      <td>23</td>
+      <td>2</td>
+      <td>2061</td>
+      <td>3</td>
+      <td>41</td>
+      <td>4</td>
+      <td>2</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1466</th>
+      <td>0</td>
+      <td>39</td>
+      <td>613</td>
+      <td>6</td>
+      <td>1</td>
+      <td>2062</td>
+      <td>4</td>
+      <td>42</td>
+      <td>2</td>
+      <td>3</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1467</th>
+      <td>0</td>
+      <td>27</td>
+      <td>155</td>
+      <td>4</td>
+      <td>3</td>
+      <td>2064</td>
+      <td>2</td>
+      <td>87</td>
+      <td>4</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1468</th>
+      <td>0</td>
+      <td>49</td>
+      <td>1023</td>
+      <td>2</td>
+      <td>3</td>
+      <td>2065</td>
+      <td>4</td>
+      <td>63</td>
+      <td>2</td>
+      <td>2</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1469</th>
+      <td>0</td>
+      <td>34</td>
+      <td>628</td>
+      <td>8</td>
+      <td>3</td>
+      <td>2068</td>
+      <td>2</td>
+      <td>82</td>
+      <td>4</td>
+      <td>2</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>1470 rows &#215; 52 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[22]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1">#att_df.to_csv (&#39;attritioncleaneddata.csv&#39;, index = False, header=True) </span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[23]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">num</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">df2</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="s1">&#39;object&#39;</span><span class="p">:</span>
+        <span class="n">num</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">num</span><span class="p">))</span>
+<span class="n">num</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>26
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[23]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&#39;Age&#39;,
+ &#39;Attrition&#39;,
+ &#39;DailyRate&#39;,
+ &#39;DistanceFromHome&#39;,
+ &#39;Education&#39;,
+ &#39;EmployeeNumber&#39;,
+ &#39;EnvironmentSatisfaction&#39;,
+ &#39;HourlyRate&#39;,
+ &#39;JobInvolvement&#39;,
+ &#39;JobLevel&#39;,
+ &#39;JobSatisfaction&#39;,
+ &#39;MonthlyIncome&#39;,
+ &#39;MonthlyRate&#39;,
+ &#39;NumCompaniesWorked&#39;,
+ &#39;OverTime&#39;,
+ &#39;PercentSalaryHike&#39;,
+ &#39;PerformanceRating&#39;,
+ &#39;RelationshipSatisfaction&#39;,
+ &#39;StockOptionLevel&#39;,
+ &#39;TotalWorkingYears&#39;,
+ &#39;TrainingTimesLastYear&#39;,
+ &#39;WorkLifeBalance&#39;,
+ &#39;YearsAtCompany&#39;,
+ &#39;YearsInCurrentRole&#39;,
+ &#39;YearsSinceLastPromotion&#39;,
+ &#39;YearsWithCurrManager&#39;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">numfeatures</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">15</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[25]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">catefeature</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">15</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[39]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">numfeatures</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Attrition&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">][</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Attrition = NO&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Attrition&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">][</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Attrition = YES&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;ValueError: c num must be 1 &lt;= num &lt;= 16, not 17&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>ValueError: c num must be 1 &lt;= num &lt;= 16, not 17
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[57]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">jda</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;JobRole&quot;</span><span class="p">],</span>  <span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Attrition&quot;</span><span class="p">])</span>
+<span class="n">jda</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>   <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">stacked</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[57]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x292370b3588&gt;</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[58]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1">#dumm=[&#39;Attrition&#39;,&#39;BusinessTravel&#39;, &#39;Department&#39;, &#39;EducationField&#39;, &#39;Gender&#39;, &#39;JobRole&#39;, &#39;MaritalStatus&#39;]</span>
+<span class="n">gda</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Gender&quot;</span><span class="p">],</span>  <span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Attrition&quot;</span><span class="p">])</span>
+<span class="n">gda</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>   <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">stacked</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[58]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x29234f58a90&gt;</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[56]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">da</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Department&quot;</span><span class="p">],</span>  <span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Attrition&quot;</span><span class="p">])</span>
+<span class="n">da</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>   <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">stacked</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[56]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x29234f56048&gt;</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[59]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">mda</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;MaritalStatus&quot;</span><span class="p">],</span>  <span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Attrition&quot;</span><span class="p">])</span>
+<span class="n">mda</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>   <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">stacked</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[59]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x29236235eb8&gt;</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[61]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">eda</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;EducationField&quot;</span><span class="p">],</span>  <span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Attrition&quot;</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>   <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">stacked</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[61]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x29234c90198&gt;</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[62]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">bda</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;BusinessTravel&quot;</span><span class="p">],</span>  <span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Attrition&quot;</span><span class="p">])</span>
+<span class="n">bda</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>   <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">stacked</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[62]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x29238a33400&gt;</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[63]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">mda</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;MaritalStatus&quot;</span><span class="p">],</span>  <span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Attrition&quot;</span><span class="p">])</span>
+<span class="n">mda</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>   <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">stacked</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[63]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x29238a85898&gt;</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[&#160;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    </div>
+  </div>
+
+
+ 
+
+
+
+<script type="text/javascript" src="/d2l/common/math/MathML.js?v=20.20.8.23830-324 "></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() { D2LMathML.DesktopInit('https://s.brightspace.com/lib/mathjax/2.7.4/MathJax.js?config=MML_HTMLorMML','https://s.brightspace.com/lib/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML','130'); });</script></body></html>
